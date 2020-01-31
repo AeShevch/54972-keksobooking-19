@@ -1,16 +1,26 @@
 'use strict';
 
-var map = document.querySelector('.js-map-container');
-var mapWidth = map.offsetWidth;
+var MAP = document.querySelector('.js-map-container');
+var MAP_WIDTH = MAP.offsetWidth;
+// Шаблон меток
+var TEMPLATE = document.getElementById('pin').content.querySelector('.js-map-pin-template');
+// Размер метки
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+// Количество объявлений
+var ADS_COUNT = 8;
+//Максимальное и минимальное расположение метки по вертикали
+var MAX_PIN_POSITION_Y = 630;
+var MIN_PIN_POSITION_Y = 130;
 
-var roomTypes = [
+var ROOM_TYPES = [
   'palace',
   'flat',
   'house',
   'bungalo',
 ];
 
-var features = [
+var FEATURES = [
   'wifi',
   'dishwasher',
   'parking',
@@ -19,11 +29,29 @@ var features = [
   'conditioner',
 ];
 
-var times = [
+var TIMES = [
   '12:00',
   '13:00',
   '14:00',
 ];
+
+var TITLES = [
+  'Calm House near Shinjuku/Shibuya',
+  'New design capsule hotel (co-ed, no lock)',
+  'Japanese-style room that can relax',
+  'Authentic Japanese Room',
+  '10 min to Shinjuku. A Japanese style house.',
+  'Koala Guest House, Opened July 20, 2016!',
+  'Asakusa Private Guest Room',
+  'A cozy private space! Mixed Dormitory with Wi-Fi',
+  'apartment hotel TASU TOCO'
+];
+
+// Массив объектов объявлений
+var ads = [];
+
+// Фрагмент для меток
+var fragment = document.createDocumentFragment();
 
 // Возвращает случайный элемент массива
 var getRandomElem = function (arr) {
@@ -42,6 +70,22 @@ var getGetRandomNumber = function (min, max) {
   return Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
 };
 
+
+function createPinHtml(ad) {
+  var pinHtml = TEMPLATE.cloneNode(true);
+
+  // Выставляем положение элемента на карте
+  pinHtml.style.top = ad.location.y + PIN_HEIGHT + 'px';
+  pinHtml.style.left = ad.location.x - PIN_WIDTH / 2 + 'px';
+
+  // Задаём атрибуты изображению на метке
+  var img = pinHtml.querySelector('img');
+  img.src = ad.author.avatar;
+  img.alt = ad.offer.title;
+
+  fragment.appendChild(pinHtml);
+}
+
 // Конструктор объектов рекламных объявлений
 function Advertisement(userId) {
   this.author = {
@@ -49,22 +93,22 @@ function Advertisement(userId) {
   };
 
   this.offer = {
-    'title': 'title',
-    'address': '600, 350',
-    'price': 999,
-    'type': getRandomElem(roomTypes),
-    'rooms': 1,
-    'guests': 2,
-    'checkin': getRandomElem(times),
-    'checkout': getRandomElem(times),
-    'features': getRandomNumberOfItems(features),
+    'title': getRandomElem(TITLES),
+    'address': getGetRandomNumber(0, 999) + ',' + getGetRandomNumber(0, 999),
+    'price': getGetRandomNumber(0, 9999),
+    'type': getRandomElem(ROOM_TYPES),
+    'rooms': getGetRandomNumber(),
+    'guests': getGetRandomNumber(),
+    'checkin': getRandomElem(TIMES),
+    'checkout': getRandomElem(TIMES),
+    'features': getRandomNumberOfItems(FEATURES),
     'description': 'description',
     'photos': this.getRandomPhotos(),
   };
 
   this.location = {
-    'x': getGetRandomNumber(0, mapWidth),
-    'y': getGetRandomNumber(130, 630),
+    'x': getGetRandomNumber(0, MAP_WIDTH),
+    'y': getGetRandomNumber(MIN_PIN_POSITION_Y, MAX_PIN_POSITION_Y),
   };
 }
 
@@ -78,41 +122,17 @@ Advertisement.prototype.getRandomPhotos = function () {
 };
 
 // Создаём массив с указанным количеством объявлений
-var ADS_COUNT = 8;
-var ads = [];
 for (var i = 1; i <= ADS_COUNT; i++) {
   ads.push(new Advertisement(i));
 }
 
 // Включаем карту
-map.classList.remove('map--faded');
+MAP.classList.remove('map--faded');
 
-// Создаём вёрстку используя данные из массива ads
-var fragment = document.createDocumentFragment();
-var template = document.getElementById('pin').content.querySelector('.js-map-pin-template');
-
-// Размер метки
-var pinWidth = 50;
-var pinHeight = 70;
-
+// Создаём по метке на каждое объявление
 ads.forEach(function (ad) {
   createPinHtml(ad);
 });
-
-function createPinHtml(ad) {
-  var pinHtml = template.cloneNode(true);
-
-  // Выставляем положение элемента на карте
-  pinHtml.style.top = ad.location.y + pinHeight + 'px';
-  pinHtml.style.left = ad.location.x - pinWidth / 2 + 'px';
-
-  // Задаём атрибуты изображению на метке
-  var img = pinHtml.querySelector('img');
-  img.src = ad.author.avatar;
-  img.alt = ad.offer.title;
-
-  fragment.appendChild(pinHtml);
-}
 
 // Вставляём полученный фрашмент на карту
 document.querySelector('.map__pins').appendChild(fragment);
