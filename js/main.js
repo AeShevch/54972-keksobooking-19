@@ -44,7 +44,7 @@ var TITLES = [
   'Koala Guest House, Opened July 20, 2016!',
   'Asakusa Private Guest Room',
   'A cozy private space! Mixed Dormitory with Wi-Fi',
-  'apartment hotel TASU TOCO'
+  'apartment hotel TASU TOCO',
 ];
 
 // Массив объектов объявлений
@@ -60,7 +60,9 @@ var getRandomElem = function (arr) {
 
 // Возвращает копию массива случайной длинны
 var getRandomNumberOfItems = function (arr) {
-  return arr.slice(getGetRandomNumber(1, arr.length));
+  var startRndIndex = getGetRandomNumber(1, arr.length);
+  var endRndIndex = getGetRandomNumber(startRndIndex, arr.length);
+  return arr.slice(startRndIndex, endRndIndex);
 };
 
 // Возвращает случайное число в указанном диапазоне
