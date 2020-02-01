@@ -16,7 +16,7 @@
     </div>
 
     <!-- Карта объявлений -->
-    <section class="map map--faded">
+    <section class="map map--faded js-map-container">
 
       <!-- Метки объявлений -->
       <div class="map__pins">
@@ -230,7 +230,7 @@
 
   <!-- Метка объявления -->
   <template id="pin">
-    <button type="button" class="map__pin" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
+    <button type="button" class="map__pin js-map-pin-template" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
   </template>
 
   <!-- Сообщение об успешном создании объявления -->
@@ -247,6 +247,8 @@
       <button class="error__button">Попробовать снова</button>
     </div>
   </template>
+
+  <script src="./js/main.js"></script>
 
 </body>
 </html>
