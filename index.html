@@ -204,15 +204,19 @@
 
   <!-- Модальное окно с информацией об объявлении -->
   <template id="card">
-    <article class="map__card popup">
+    <article class="map__card popup js-card-template">
       <img src="img/avatars/user01.png" class="popup__avatar" width="70" height="70" alt="Аватар пользователя">
       <button type="button" class="popup__close">Закрыть</button>
-      <h3 class="popup__title">Уютное гнездышко для молодоженов</h3>
-      <p class="popup__text popup__text--address">102-0082 Tōkyō-to, Chiyoda-ku, Ichibanchō, 14−3</p>
-      <p class="popup__text popup__text--price">5200&#x20bd;<span>/ночь</span></p>
-      <h4 class="popup__type">Квартира</h4>
-      <p class="popup__text popup__text--capacity">2 комнаты для 3 гостей</p>
-      <p class="popup__text popup__text--time">Заезд после 14:00, выезд до 10:00</p>
+      <h3 class="popup__title js-card-title">Уютное гнездышко для молодоженов</h3>
+      <p class="popup__text popup__text--address js-card-address">102-0082 Tōkyō-to, Chiyoda-ku, Ichibanchō, 14−3</p>
+      <p class="popup__text popup__text--price"><span class="js-card-price">5200</span>&#x20bd;<span>/ночь</span></p>
+      <h4 class="popup__type js-card-type">Квартира</h4>
+      <p class="popup__text popup__text--capacity"><span class="js-card-rooms-count">2</span> комнаты для <span class="js-card-guests-count">3</span> гостей</p>
+      <p class="popup__text popup__text--time">
+        Заезд после
+        <span class="js-card-checkin">14:00</span>,
+        выезд до <span class="js-card-checkout">10:00</span>
+      </p>
       <ul class="popup__features">
         <li class="popup__feature popup__feature--wifi"></li>
         <li class="popup__feature popup__feature--dishwasher"></li>
