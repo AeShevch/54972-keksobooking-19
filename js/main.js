@@ -136,7 +136,7 @@ ads.forEach(function (ad) {
   createPinHtml(ad);
 });
 
-// Вставляём полученный фрашмент на карту
+// Вставляём полученный фрагмент на карту
 document.querySelector('.map__pins').appendChild(fragment);
 
 var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
@@ -151,10 +151,22 @@ cardHtml.querySelector('.js-card-rooms-count').textContent = ads[0].offer.rooms.
 cardHtml.querySelector('.js-card-guests-count').textContent = ads[0].offer.guests.toString();
 cardHtml.querySelector('.js-card-checkin').textContent = ads[0].offer.checkin;
 cardHtml.querySelector('.js-card-checkout').textContent = ads[0].offer.checkout;
+cardHtml.querySelector('.js-card-desc').textContent = ads[0].offer.description;
 
-// cardHtml.querySelectorAll('.popup__feature').forEach(function (featureItem) {
-//   featureItem.1
-// });
+var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
+var imagesFragment = document.createDocumentFragment();
+
+ads[0].offer.photos.forEach(function (photo) {
+  var imageHtml = cardImagesBlock.cloneNode();
+  imageHtml.src = photo;
+  imagesFragment.appendChild(imageHtml);
+});
+
+cardImagesBlock.innerHTML = '';
+cardImagesBlock.appendChild(imagesFragment);
+
+cardHtml.querySelector('.js-card-avatar').src = ads[0].author.avatar;
+
 
 var cardType = '';
 switch (ads[0].offer.type) {
@@ -173,5 +185,12 @@ switch (ads[0].offer.type) {
 }
 cardHtml.querySelector('.js-card-type').textContent = cardType;
 
+var featuresBlock = cardHtml.querySelector('.js-card-features');
+ads[0].offer.features.forEach(function (feature) {
+  featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
+});
 
+cardFragment.appendChild(cardHtml);
+
+MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
 

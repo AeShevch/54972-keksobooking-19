@@ -16,7 +16,7 @@
     </div>
 
     <!-- Карта объявлений -->
-    <section class="map map--faded">
+    <section class="map map--faded js-map-container">
 
       <!-- Метки объявлений -->
       <div class="map__pins">
@@ -36,7 +36,7 @@
       </div>
 
       <!-- Фильтрация объявлений -->
-      <div class="map__filters-container">
+      <div class="map__filters-container js-map-filter">
         <form action="#" class="map__filters" autocomplete="off">
           <select name="housing-type" id="housing-type" class="map__filter">
             <option value="any" selected>Любой тип жилья</option>
@@ -205,7 +205,7 @@
   <!-- Модальное окно с информацией об объявлении -->
   <template id="card">
     <article class="map__card popup js-card-template">
-      <img src="img/avatars/user01.png" class="popup__avatar" width="70" height="70" alt="Аватар пользователя">
+      <img src="img/avatars/user01.png" class="popup__avatar js-card-avatar" width="70" height="70" alt="Аватар пользователя">
       <button type="button" class="popup__close">Закрыть</button>
       <h3 class="popup__title js-card-title">Уютное гнездышко для молодоженов</h3>
       <p class="popup__text popup__text--address js-card-address">102-0082 Tōkyō-to, Chiyoda-ku, Ichibanchō, 14−3</p>
@@ -217,16 +217,16 @@
         <span class="js-card-checkin">14:00</span>,
         выезд до <span class="js-card-checkout">10:00</span>
       </p>
-      <ul class="popup__features">
-        <li class="popup__feature popup__feature--wifi"></li>
-        <li class="popup__feature popup__feature--dishwasher"></li>
-        <li class="popup__feature popup__feature--parking"></li>
-        <li class="popup__feature popup__feature--washer"></li>
-        <li class="popup__feature popup__feature--elevator"></li>
-        <li class="popup__feature popup__feature--conditioner"></li>
+      <ul class="popup__features js-card-features">
+        <li class="popup__feature popup__feature--hidden popup__feature--wifi"></li>
+        <li class="popup__feature popup__feature--hidden popup__feature--dishwasher"></li>
+        <li class="popup__feature popup__feature--hidden popup__feature--parking"></li>
+        <li class="popup__feature popup__feature--hidden popup__feature--washer"></li>
+        <li class="popup__feature popup__feature--hidden popup__feature--elevator"></li>
+        <li class="popup__feature popup__feature--hidden popup__feature--conditioner"></li>
       </ul>
-      <p class="popup__description">Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.</p>
-      <div class="popup__photos">
+      <p class="popup__description js-card-desc">Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.</p>
+      <div class="popup__photos js-card-photo">
         <img src="" class="popup__photo" width="45" height="40" alt="Фотография жилья">
       </div>
     </article>
@@ -234,7 +234,7 @@
 
   <!-- Метка объявления -->
   <template id="pin">
-    <button type="button" class="map__pin" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
+    <button type="button" class="map__pin js-map-pin-template" style="left: 200px; top: 400px;"><img src="img/avatars/user07.png" width="40" height="40" draggable="false" alt="Метка объявления"></button>
   </template>
 
   <!-- Сообщение об успешном создании объявления -->
@@ -251,6 +251,8 @@
       <button class="error__button">Попробовать снова</button>
     </div>
   </template>
+
+  <script src="./js/main.js"></script>
 
 </body>
 </html>

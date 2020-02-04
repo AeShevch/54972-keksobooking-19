@@ -1117,6 +1117,10 @@ fieldset {
   background-size: 25px 345px;
 }
 
+.popup__feature--hidden {
+  display: none;
+}
+
 .popup__feature--wifi {
   background-position: 2px 5px;
 }
