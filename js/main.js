@@ -162,7 +162,6 @@ cardHtml.querySelector('.js-card-desc').textContent = ads[0].offer.description;
 
 // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
 var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
-console.log('click');
 var imagesFragment = document.createDocumentFragment();
 ads[0].offer.photos.forEach(function (photo) {
   var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
