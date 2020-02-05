@@ -117,7 +117,7 @@ function Advertisement(userId) {
 // Возвращает изображения со случайным индексом
 Advertisement.prototype.getRandomPhotos = function () {
   var arr = [];
-  for (var i = 0; i <= getGetRandomNumber(1); i++) {
+  for (var i = 1; i <= getGetRandomNumber(1, 3); i++) {
     arr.push('http://o0.github.io/assets/images/tokyo/hotel' + i + '.jpg');
   }
   return arr;
@@ -139,11 +139,15 @@ ads.forEach(function (ad) {
 // Вставляём полученный фрагмент на карту
 document.querySelector('.map__pins').appendChild(fragment);
 
+// Вставляем информацию о предложении
+// Записываем вёрстку шаблона в константу
 var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
-
 var cardFragment = document.createDocumentFragment();
+
+// Клонируем шаблон
 var cardHtml = CARD_TEMPLATE.cloneNode(true);
-console.log(ads[0]);
+// Вставлем в него данные из первого элемента массива с объявлениями
+// В следующем задании тут будут цикл, который будет вставлять данные для всех элементов
 cardHtml.querySelector('.js-card-title').textContent = ads[0].offer.title;
 cardHtml.querySelector('.js-card-address').textContent = ads[0].offer.address;
 cardHtml.querySelector('.js-card-price').textContent = ads[0].offer.price.toString();
@@ -153,21 +157,23 @@ cardHtml.querySelector('.js-card-checkin').textContent = ads[0].offer.checkin;
 cardHtml.querySelector('.js-card-checkout').textContent = ads[0].offer.checkout;
 cardHtml.querySelector('.js-card-desc').textContent = ads[0].offer.description;
 
+// Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
 var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
+console.log('click');
 var imagesFragment = document.createDocumentFragment();
-
 ads[0].offer.photos.forEach(function (photo) {
-  var imageHtml = cardImagesBlock.cloneNode();
+  var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
   imageHtml.src = photo;
   imagesFragment.appendChild(imageHtml);
 });
-
+// Очищаем блок и вставлем в него изображения
 cardImagesBlock.innerHTML = '';
 cardImagesBlock.appendChild(imagesFragment);
 
+// Подставляем ссылку на изображение аватара
 cardHtml.querySelector('.js-card-avatar').src = ads[0].author.avatar;
 
-
+// Подставляем значения типа квартиры
 var cardType = '';
 switch (ads[0].offer.type) {
   case 'bungalo':
@@ -185,12 +191,14 @@ switch (ads[0].offer.type) {
 }
 cardHtml.querySelector('.js-card-type').textContent = cardType;
 
+// Показываем все элементы features, которые у нас есть в массиве
 var featuresBlock = cardHtml.querySelector('.js-card-features');
 ads[0].offer.features.forEach(function (feature) {
   featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
 });
 
+// заполняем фрагмент
 cardFragment.appendChild(cardHtml);
-
+// Выводим фрагмент на страницу
 MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
 
