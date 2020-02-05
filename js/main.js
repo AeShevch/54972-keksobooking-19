@@ -139,6 +139,9 @@ ads.forEach(function (ad) {
 // Вставляём полученный фрагмент на карту
 document.querySelector('.map__pins').appendChild(fragment);
 
+// Вставляём полученный фрагмент на карту
+document.querySelector('.map__pins').appendChild(fragment);
+
 // Вставляем информацию о предложении
 // Записываем вёрстку шаблона в константу
 var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
@@ -201,4 +204,3 @@ ads[0].offer.features.forEach(function (feature) {
 cardFragment.appendChild(cardHtml);
 // Выводим фрагмент на страницу
 MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
-
