@@ -13,6 +13,10 @@ var ADS_COUNT = 8;
 var MAX_PIN_POSITION_Y = 630;
 var MIN_PIN_POSITION_Y = 130;
 
+var FORM = document.querySelector('.ad-form');
+var FIELD_SETS = FORM.querySelectorAll('')
+var FORM_FIELDS = FORM.querySelectorAll('.js-ad-field');
+
 var ROOM_TYPES = [
   'palace',
   'flat',
@@ -129,7 +133,7 @@ for (var i = 1; i <= ADS_COUNT; i++) {
 }
 
 // Включаем карту
-MAP.classList.remove('map--faded');
+// MAP.classList.remove('map--faded');
 
 // Создаём по метке на каждое объявление
 ads.forEach(function (ad) {
@@ -203,3 +207,7 @@ ads[0].offer.features.forEach(function (feature) {
 cardFragment.appendChild(cardHtml);
 // Выводим фрагмент на страницу
 MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+
+FORM_FIELDS.forEach(function (field) {
+  field.setAttribute('disabled', 'disabled');
+});
