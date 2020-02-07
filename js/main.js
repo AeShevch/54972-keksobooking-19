@@ -13,9 +13,13 @@ var ADS_COUNT = 8;
 var MAX_PIN_POSITION_Y = 630;
 var MIN_PIN_POSITION_Y = 130;
 
+var ENTER_KEY = 'Enter';
+
 var FORM = document.querySelector('.ad-form');
-var FIELD_SETS = FORM.querySelectorAll('')
+var FIELD_SETS = FORM.querySelectorAll('.js-form-fieldset');
 var FORM_FIELDS = FORM.querySelectorAll('.js-ad-field');
+var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
+var MAIN_PIN = MAP.querySelector('.js-main-pin');
 
 var ROOM_TYPES = [
   'palace',
@@ -92,6 +96,110 @@ function createPinHtml(ad) {
   fragment.appendChild(pinHtml);
 }
 
+var addPinsOnMap = function (ads) {
+  // Создаём по метке на каждое объявление
+  ads.forEach(function (ad) {
+    createPinHtml(ad);
+  });
+
+  // Вставляем полученный фрагмент на карту
+  document.querySelector('.map__pins').appendChild(fragment);
+};
+
+var setActiveMode = function () {
+  FIELDS_TO_DISABLE.forEach(function (fieldset) {
+    fieldset.removeAttribute('disabled');
+  });
+  MAP.classList.remove('map--faded');
+  FORM.classList.remove('ad-form--disabled');
+  addPinsOnMap(ads);
+};
+
+var onPinMouseDown = function (evt) {
+  if (evt.button === 0) {
+    setActiveMode();
+  }
+};
+
+var onPinEnterPress = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    setActiveMode();
+  }
+};
+
+var setNonActiveMode = function () {
+  FIELDS_TO_DISABLE.forEach(function (fieldset) {
+    fieldset.setAttribute('disabled', 'disabled');
+  });
+
+  MAIN_PIN.addEventListener('mousedown', onPinMouseDown);
+  MAIN_PIN.addEventListener('keyup', onPinEnterPress);
+};
+
+// var createCards = function () {
+//   // Вставляем информацию о предложении
+// // Записываем вёрстку шаблона в константу
+//   var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
+//   var cardFragment = document.createDocumentFragment();
+//
+//   // Клонируем шаблон
+//   var cardHtml = CARD_TEMPLATE.cloneNode(true);
+//   // Вставлем в него данные из первого элемента массива с объявлениями
+//   // В следующем задании тут будут цикл, который будет вставлять данные для всех элементов
+//   cardHtml.querySelector('.js-card-title').textContent = ads[0].offer.title;
+//   cardHtml.querySelector('.js-card-address').textContent = ads[0].offer.address;
+//   cardHtml.querySelector('.js-card-price').textContent = ads[0].offer.price.toString();
+//   cardHtml.querySelector('.js-card-rooms-count').textContent = ads[0].offer.rooms.toString();
+//   cardHtml.querySelector('.js-card-guests-count').textContent = ads[0].offer.guests.toString();
+//   cardHtml.querySelector('.js-card-checkin').textContent = ads[0].offer.checkin;
+//   cardHtml.querySelector('.js-card-checkout').textContent = ads[0].offer.checkout;
+//   cardHtml.querySelector('.js-card-desc').textContent = ads[0].offer.description;
+//
+//   // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
+//   var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
+//   var imagesFragment = document.createDocumentFragment();
+//   ads[0].offer.photos.forEach(function (photo) {
+//     var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
+//     imageHtml.src = photo;
+//     imagesFragment.appendChild(imageHtml);
+//   });
+//   // Очищаем блок и вставлем в него изображения
+//   cardImagesBlock.innerHTML = '';
+//   cardImagesBlock.appendChild(imagesFragment);
+//
+//   // Подставляем ссылку на изображение аватара
+//   cardHtml.querySelector('.js-card-avatar').src = ads[0].author.avatar;
+//
+//   // Подставляем значения типа квартиры
+//   var cardType = '';
+//   switch (ads[0].offer.type) {
+//     case 'bungalo':
+//       cardType = 'Бунгало';
+//       break;
+//     case 'house':
+//       cardType = 'Дом';
+//       break;
+//     case 'palace':
+//       cardType = 'Дворец';
+//       break;
+//     default:
+//       cardType = 'Квартира';
+//       break;
+//   }
+//   cardHtml.querySelector('.js-card-type').textContent = cardType;
+//
+//   // Показываем все элементы features, которые у нас есть в массиве
+//   var featuresBlock = cardHtml.querySelector('.js-card-features');
+//   ads[0].offer.features.forEach(function (feature) {
+//     featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
+//   });
+//
+//   // заполняем фрагмент
+//   cardFragment.appendChild(cardHtml);
+//   // Выводим фрагмент на страницу
+//   MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+// };
+
 // Конструктор объектов рекламных объявлений
 function Advertisement(userId) {
   this.author = {
@@ -132,82 +240,5 @@ for (var i = 1; i <= ADS_COUNT; i++) {
   ads.push(new Advertisement(i));
 }
 
-// Включаем карту
-// MAP.classList.remove('map--faded');
-
-// Создаём по метке на каждое объявление
-ads.forEach(function (ad) {
-  createPinHtml(ad);
-});
-
-// Вставляём полученный фрагмент на карту
-document.querySelector('.map__pins').appendChild(fragment);
-
-// Вставляём полученный фрагмент на карту
-document.querySelector('.map__pins').appendChild(fragment);
-
-// Вставляем информацию о предложении
-// Записываем вёрстку шаблона в константу
-var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
-var cardFragment = document.createDocumentFragment();
-
-// Клонируем шаблон
-var cardHtml = CARD_TEMPLATE.cloneNode(true);
-// Вставлем в него данные из первого элемента массива с объявлениями
-// В следующем задании тут будут цикл, который будет вставлять данные для всех элементов
-cardHtml.querySelector('.js-card-title').textContent = ads[0].offer.title;
-cardHtml.querySelector('.js-card-address').textContent = ads[0].offer.address;
-cardHtml.querySelector('.js-card-price').textContent = ads[0].offer.price.toString();
-cardHtml.querySelector('.js-card-rooms-count').textContent = ads[0].offer.rooms.toString();
-cardHtml.querySelector('.js-card-guests-count').textContent = ads[0].offer.guests.toString();
-cardHtml.querySelector('.js-card-checkin').textContent = ads[0].offer.checkin;
-cardHtml.querySelector('.js-card-checkout').textContent = ads[0].offer.checkout;
-cardHtml.querySelector('.js-card-desc').textContent = ads[0].offer.description;
-
-// Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
-var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
-var imagesFragment = document.createDocumentFragment();
-ads[0].offer.photos.forEach(function (photo) {
-  var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
-  imageHtml.src = photo;
-  imagesFragment.appendChild(imageHtml);
-});
-// Очищаем блок и вставлем в него изображения
-cardImagesBlock.innerHTML = '';
-cardImagesBlock.appendChild(imagesFragment);
-
-// Подставляем ссылку на изображение аватара
-cardHtml.querySelector('.js-card-avatar').src = ads[0].author.avatar;
-
-// Подставляем значения типа квартиры
-var cardType = '';
-switch (ads[0].offer.type) {
-  case 'bungalo':
-    cardType = 'Бунгало';
-    break;
-  case 'house':
-    cardType = 'Дом';
-    break;
-  case 'palace':
-    cardType = 'Дворец';
-    break;
-  default:
-    cardType = 'Квартира';
-    break;
-}
-cardHtml.querySelector('.js-card-type').textContent = cardType;
-
-// Показываем все элементы features, которые у нас есть в массиве
-var featuresBlock = cardHtml.querySelector('.js-card-features');
-ads[0].offer.features.forEach(function (feature) {
-  featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
-});
-
-// заполняем фрагмент
-cardFragment.appendChild(cardHtml);
-// Выводим фрагмент на страницу
-MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
-
-FORM_FIELDS.forEach(function (field) {
-  field.setAttribute('disabled', 'disabled');
-});
+// Переводим страницу в неактивный режим
+setNonActiveMode();
