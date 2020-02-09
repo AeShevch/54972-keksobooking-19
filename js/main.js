@@ -21,6 +21,14 @@ var FORM_FIELDS = FORM.querySelectorAll('.js-ad-field');
 var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
 var MAIN_PIN = MAP.querySelector('.js-main-pin');
 
+// Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
+var MAIN_PIN_POINTER_HEIGHT = 22;
+
+var MAIN_PIN_WIDTH = MAIN_PIN.offsetWidth;
+var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
+
+var ADDRESS_FIELD = document.getElementById('address');
+
 var ROOM_TYPES = [
   'palace',
   'flat',
@@ -115,10 +123,18 @@ var setActiveMode = function () {
   addPinsOnMap(ads);
 };
 
+var setAddress = function (type) {
+  var coordinatesX = Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2);
+  var coordinatesY = Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (type === 'center' ?  MAIN_PIN_HEIGHT / 2 : MAIN_PIN_HEIGHT));
+
+  ADDRESS_FIELD.value = coordinatesX + ', ' + coordinatesY;
+};
+
 var onPinMouseDown = function (evt) {
   if (evt.button === 0) {
     setActiveMode();
   }
+  setAddress();
 };
 
 var onPinEnterPress = function (evt) {
@@ -131,6 +147,8 @@ var setNonActiveMode = function () {
   FIELDS_TO_DISABLE.forEach(function (fieldset) {
     fieldset.setAttribute('disabled', 'disabled');
   });
+
+  setAddress();
 
   MAIN_PIN.addEventListener('mousedown', onPinMouseDown);
   MAIN_PIN.addEventListener('keyup', onPinEnterPress);
@@ -242,3 +260,4 @@ for (var i = 1; i <= ADS_COUNT; i++) {
 
 // Переводим страницу в неактивный режим
 setNonActiveMode();
+setAddress('center');
