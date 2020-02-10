@@ -333,7 +333,6 @@ for (var i = 1; i <= ADS_COUNT; i++) {
 // Переводим страницу в неактивный режим
 setNonActiveMode();
 setAddress('center');
-
 FORM.querySelector('.js-flat-type').addEventListener('change', onFlatTypeChange);
 
 FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
