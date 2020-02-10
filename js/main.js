@@ -121,7 +121,7 @@ function createPinHtml(ad) {
   fragment.appendChild(pinHtml);
 }
 
-var addPinsOnMap = function (ads) {
+var addPinsOnMap = function () {
   // Создаём по метке на каждое объявление
   ads.forEach(function (ad) {
     createPinHtml(ad);
@@ -142,7 +142,7 @@ var setActiveMode = function () {
 
 var setAddress = function (type) {
   var coordinatesX = Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2);
-  var coordinatesY = Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (type === 'center' ?  MAIN_PIN_HEIGHT / 2 : MAIN_PIN_HEIGHT));
+  var coordinatesY = Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (type === 'center' ? MAIN_PIN_HEIGHT / 2 : MAIN_PIN_HEIGHT));
 
   ADDRESS_FIELD.value = coordinatesX + ', ' + coordinatesY;
 };
