@@ -16,9 +16,26 @@ var MIN_PIN_POSITION_Y = 130;
 var ENTER_KEY = 'Enter';
 
 var FORM = document.querySelector('.ad-form');
-var FIELD_SETS = FORM.querySelectorAll('.js-form-fieldset');
-var FORM_FIELDS = FORM.querySelectorAll('.js-ad-field');
 var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
+var TIME_FIELD_SELECTOR = '.js-time-field';
+var PRICE_FIELD = document.querySelector('.js-ad-price');
+var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
+var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
+
+var BUNGALO_MIN_PRICE = 0;
+var FLAT_MIN_PRICE = 1000;
+var HOUSE_MIN_PRICE = 5000;
+var PALACE_MIN_PRICE = 10000;
+
+var ONE_GUEST_OPTION_VALUE = '1';
+var TWO_GUESTS_OPTION_VALUE = '2';
+var NOT_FOR_GUESTS_OPTION_VALUE = '0';
+
+var ONE_ROOM_OPTION_VALUE = '1';
+var TWO_ROOMS_OPTION_VALUE = '2';
+var THREE_ROOMS_OPTION_VALUE = '3';
+var HUNDRED_ROOM_OPTION_VALUE = '100';
+
 var MAIN_PIN = MAP.querySelector('.js-main-pin');
 
 // Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
@@ -154,6 +171,61 @@ var setNonActiveMode = function () {
   MAIN_PIN.addEventListener('keyup', onPinEnterPress);
 };
 
+var changeAdMinPrice = function (input, minPrice) {
+  input.min = minPrice;
+  input.placeholder = minPrice;
+};
+
+var onFlatTypeChange = function (evt) {
+  switch (evt.target.selectedOptions[0].value) {
+    case 'bungalo':
+      changeAdMinPrice(PRICE_FIELD, BUNGALO_MIN_PRICE);
+      break;
+    case 'flat':
+      changeAdMinPrice(PRICE_FIELD, FLAT_MIN_PRICE);
+      break;
+    case 'house':
+      changeAdMinPrice(PRICE_FIELD, HOUSE_MIN_PRICE);
+      break;
+    case 'palace':
+      changeAdMinPrice(PRICE_FIELD, PALACE_MIN_PRICE);
+      break;
+    default:
+      throw new Error('Некорректное значение поля «Тип жилья»');
+  }
+};
+
+var onTimeChange = function (evt) {
+  document.querySelector(TIME_FIELD_SELECTOR + ':not(#' + evt.target.id + ')').value = evt.target.value;
+};
+
+var onRoomsCountChange = function (evt) {
+  switch (evt.target.value) {
+    case ONE_ROOM_OPTION_VALUE:
+      CAPACITY_OPTIONS.forEach(function (option) {
+        option.disabled = option.value !== ONE_GUEST_OPTION_VALUE;
+      });
+      break;
+    case TWO_ROOMS_OPTION_VALUE:
+      CAPACITY_OPTIONS.forEach(function (option) {
+        option.disabled = !(option.value === ONE_GUEST_OPTION_VALUE || option.value === TWO_GUESTS_OPTION_VALUE);
+      });
+      break;
+    case THREE_ROOMS_OPTION_VALUE:
+      CAPACITY_OPTIONS.forEach(function (option) {
+        option.disabled = option.value === NOT_FOR_GUESTS_OPTION_VALUE;
+      });
+      break;
+    case HUNDRED_ROOM_OPTION_VALUE:
+      CAPACITY_OPTIONS.forEach(function (option) {
+        option.disabled = option.value !== NOT_FOR_GUESTS_OPTION_VALUE;
+      });
+      break;
+    default:
+      throw new Error('Некорректное значение поля «Количество комнат»');
+  }
+};
+
 // var createCards = function () {
 //   // Вставляем информацию о предложении
 // // Записываем вёрстку шаблона в константу
@@ -261,3 +333,11 @@ for (var i = 1; i <= ADS_COUNT; i++) {
 // Переводим страницу в неактивный режим
 setNonActiveMode();
 setAddress('center');
+
+FORM.querySelector('.js-flat-type').addEventListener('change', onFlatTypeChange);
+
+FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
+  timeField.addEventListener('change', onTimeChange);
+});
+
+FORM.querySelector('.js-rooms-count-field').addEventListener('change', onRoomsCountChange);

@@ -123,11 +123,11 @@
             </fieldset>
             <fieldset class="ad-form__element ad-form__element--wide">
                 <label class="ad-form__label" for="address">Адрес</label>
-                <input disabled id="address" name="address" type="text">
+                <input readonly id="address" name="address" type="text">
             </fieldset>
             <fieldset class="ad-form__element js-disable-on-load">
                 <label class="ad-form__label" for="type">Тип жилья</label>
-                <select class="js-ad-field" id="type" name="type">
+                <select class="js-ad-field js-flat-type" id="type" name="type">
                     <option value="bungalo">Бунгало</option>
                     <option value="flat" selected>Квартира</option>
                     <option value="house">Дом</option>
@@ -136,17 +136,23 @@
             </fieldset>
             <fieldset class="ad-form__element js-disable-on-load">
                 <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-                <input class="js-ad-field" id="price" name="price" type="number" placeholder="5000" max="1000000"
+                <input class="js-ad-field js-ad-price"
+                       id="price"
+                       name="price"
+                       type="number"
+                       placeholder="1000"
+                       min="1000"
+                       max="1000000"
                        required>
             </fieldset>
             <fieldset class="ad-form__element ad-form__element--time js-disable-on-load">
                 <label class="ad-form__label" for="timein">Время заезда и выезда</label>
-                <select class="js-ad-field" id="timein" name="timein">
+                <select class="js-ad-field js-time-field" id="timein" name="timein">
                     <option value="12:00" selected>После 12</option>
                     <option value="13:00">После 13</option>
                     <option value="14:00">После 14</option>
                 </select>
-                <select class="js-ad-field" id="timeout" name="timeout" title="Time to go out">
+                <select class="js-ad-field js-time-field" id="timeout" name="timeout" title="Time to go out">
                     <option value="12:00" selected>Выезд до 12</option>
                     <option value="13:00">Выезд до 13</option>
                     <option value="14:00">Выезд до 14</option>
@@ -154,7 +160,7 @@
             </fieldset>
             <fieldset class="ad-form__element js-disable-on-load">
                 <label class="ad-form__label" for="room_number">Количество комнат</label>
-                <select class="js-ad-field" id="room_number" name="rooms">
+                <select class="js-ad-field js-rooms-count-field" id="room_number" name="rooms">
                     <option value="1" selected>1 комната</option>
                     <option value="2">2 комнаты</option>
                     <option value="3">3 комнаты</option>
@@ -163,7 +169,7 @@
             </fieldset>
             <fieldset class="ad-form__element js-disable-on-load">
                 <label class="ad-form__label" for="capacity">Количество мест</label>
-                <select class="js-ad-field" id="capacity" name="capacity">
+                <select class="js-ad-field js-capacity-field" id="capacity" name="capacity">
                     <option value="3" selected>для 3 гостей</option>
                     <option value="2">для 2 гостей</option>
                     <option value="1">для 1 гостя</option>
