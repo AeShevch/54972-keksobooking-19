@@ -15,6 +15,7 @@ var ADS_COUNT = 8;
 var MAX_PIN_POSITION_Y = 630;
 var MIN_PIN_POSITION_Y = 130;
 
+var ESC_KEY = 'Escape';
 var ENTER_KEY = 'Enter';
 
 var FORM = document.querySelector('.ad-form');
@@ -23,6 +24,7 @@ var TIME_FIELD_SELECTOR = '.js-time-field';
 var PRICE_FIELD = document.querySelector('.js-ad-price');
 var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
 var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
+var DEFAULT_CAPACITY = '1';
 
 var BUNGALO_MIN_PRICE = 0;
 var FLAT_MIN_PRICE = 1000;
@@ -39,6 +41,8 @@ var THREE_ROOMS_OPTION_VALUE = '3';
 var HUNDRED_ROOM_OPTION_VALUE = '100';
 
 var MAIN_PIN = MAP.querySelector('.js-main-pin');
+var PIN_CARDS_SELECTOR = '.js-pin-card';
+var CARD_MOD_HIDDEN = 'map__card_hidden';
 
 // Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
 var MAIN_PIN_POINTER_HEIGHT = 22;
@@ -90,7 +94,12 @@ var fragment = document.createDocumentFragment();
 
 // Возвращает случайный элемент массива
 var getRandomElem = function (arr) {
-  return arr[getGetRandomNumber(0, arr.length)];
+  // console.log('<------');
+  var temp = arr[getGetRandomNumber(0, arr.length - 1)];
+  // console.log('arr.length = ' + arr.length);
+  // console.log(temp);
+  // console.log('<------');
+  return temp;
 };
 
 // Возвращает копию массива случайной длинны
@@ -104,11 +113,13 @@ var getRandomNumberOfItems = function (arr) {
 var getGetRandomNumber = function (min, max) {
   var minValue = min ? min : 0;
   var maxValue = max ? max : 9;
-  return Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
+
+  var temp = Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
+  // console.log('number = ' + temp);
+  return temp;
 };
 
-
-function createPinHtml(ad) {
+var createPinHtml = function (ad) {
   var pinHtml = TEMPLATE.cloneNode(true);
 
   pinHtml.dataset.id = ad.userId;
@@ -123,7 +134,7 @@ function createPinHtml(ad) {
   img.alt = ad.offer.title;
 
   fragment.appendChild(pinHtml);
-}
+};
 
 var addPinsOnMap = function () {
   // Создаём по метке на каждое объявление
@@ -139,13 +150,19 @@ var setActiveMode = function () {
   FIELDS_TO_DISABLE.forEach(function (fieldset) {
     fieldset.removeAttribute('disabled');
   });
+
   MAP.classList.remove('map--faded');
   FORM.classList.remove('ad-form--disabled');
+
   addPinsOnMap(ads);
 
   MAP.querySelectorAll(PIN_SELECTOR).forEach(function (pin) {
-    pin.addEventListener('click', showAdInfoCard);
-    pin.addEventListener('keydown', onPinEnterPress);
+    pin.addEventListener('click', function () {
+      showAdInfoCard(pin);
+    });
+    pin.addEventListener('keydown', function () {
+      onPinEnterPress(pin);
+    });
   });
 };
 
@@ -184,6 +201,9 @@ var setNonActiveMode = function () {
 
   MAIN_PIN.addEventListener('mousedown', onPinMouseDown);
   MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
+
+  document.removeEventListener('click', showAdInfoCard);
+  document.removeEventListener('keydown', onPinEnterPress);
 };
 
 var changeAdMinPrice = function (input, minPrice) {
@@ -245,30 +265,39 @@ var onRoomsCountChange = function (evt) {
   setAvailableCapacity(evt.target.value);
 };
 
-var showAdInfoCard = function (evt) {
-  // Вставляем информацию о предложении
-// Записываем вёрстку шаблона в константу
-  var CARD_TEMPLATE = document.getElementById('card').content.querySelector('.js-card-template');
-  var cardFragment = document.createDocumentFragment();
-  evt.stopPropagation();
-  console.log(evt);
+var showAdInfoCard = function (pin) {
+  var card = document.querySelector(PIN_CARDS_SELECTOR);
+  var cardIsExists = true;
 
-  var currentAd = ads[evt.target.dataset.id];
+  // Если карточки ещё нет на странице, то берём её из шаблона
+  if (!card) {
+    cardIsExists = false;
+    var CARD_TEMPLATE = document.getElementById('card').content.querySelector(PIN_CARDS_SELECTOR);
+    var cardFragment = document.createDocumentFragment();
+    // Клонируем шаблон
+    card = CARD_TEMPLATE.cloneNode(true);
+  }
 
-  // Клонируем шаблон
-  var cardHtml = CARD_TEMPLATE.cloneNode(true);
+  // Показываем карточку, если она скрыта
+  if (cardIsExists && card.classList.contains(CARD_MOD_HIDDEN)) {
+    card.classList.remove(CARD_MOD_HIDDEN);
+  }
+
+  // Id пользователя начинаются с 1, а элементы массива с 0
+  var currentAd = ads[pin.dataset.id - 1];
+
   // Вставлем в него данные из элемента массива с объявлениями
-  cardHtml.querySelector('.js-card-title').textContent = currentAd.offer.title;
-  cardHtml.querySelector('.js-card-address').textContent = currentAd.offer.address;
-  cardHtml.querySelector('.js-card-price').textContent = currentAd.offer.price.toString();
-  cardHtml.querySelector('.js-card-rooms-count').textContent = currentAd.offer.rooms.toString();
-  cardHtml.querySelector('.js-card-guests-count').textContent = currentAd.offer.guests.toString();
-  cardHtml.querySelector('.js-card-checkin').textContent = currentAd.offer.checkin;
-  cardHtml.querySelector('.js-card-checkout').textContent = currentAd.offer.checkout;
-  cardHtml.querySelector('.js-card-desc').textContent = currentAd.offer.description;
+  card.querySelector('.js-card-title').textContent = currentAd.offer.title;
+  card.querySelector('.js-card-address').textContent = currentAd.offer.address;
+  card.querySelector('.js-card-price').textContent = currentAd.offer.price.toString();
+  card.querySelector('.js-card-rooms-count').textContent = currentAd.offer.rooms.toString();
+  card.querySelector('.js-card-guests-count').textContent = currentAd.offer.guests.toString();
+  card.querySelector('.js-card-checkin').textContent = currentAd.offer.checkin;
+  card.querySelector('.js-card-checkout').textContent = currentAd.offer.checkout;
+  card.querySelector('.js-card-desc').textContent = currentAd.offer.description;
 
   // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
-  var cardImagesBlock = cardHtml.querySelector('.js-card-photo');
+  var cardImagesBlock = card.querySelector('.js-card-photo');
   var imagesFragment = document.createDocumentFragment();
   currentAd.offer.photos.forEach(function (photo) {
     var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
@@ -280,7 +309,7 @@ var showAdInfoCard = function (evt) {
   cardImagesBlock.appendChild(imagesFragment);
 
   // Подставляем ссылку на изображение аватара
-  cardHtml.querySelector('.js-card-avatar').src = currentAd.author.avatar;
+  card.querySelector('.js-card-avatar').src = currentAd.author.avatar;
 
   // Подставляем значения типа квартиры
   var cardType = '';
@@ -294,24 +323,52 @@ var showAdInfoCard = function (evt) {
     case 'palace':
       cardType = 'Дворец';
       break;
-    default:
+    case 'flat':
       cardType = 'Квартира';
       break;
+    default:
+      throw new Error('Некорректный тип квартиры');
   }
-  cardHtml.querySelector('.js-card-type').textContent = cardType;
+  card.querySelector('.js-card-type').textContent = cardType;
 
   // Показываем все элементы features, которые у нас есть в массиве
-  var featuresBlock = cardHtml.querySelector('.js-card-features');
+  var featuresBlock = card.querySelector('.js-card-features');
+
   currentAd.offer.features.forEach(function (feature) {
     featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
   });
 
-  // заполняем фрагмент
-  cardFragment.appendChild(cardHtml);
-  // Выводим фрагмент на страницу
-  MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+  // Если карточки нет, то вставляем её на страницу
+  if (!cardIsExists) {
+    // заполняем фрагмент
+    cardFragment.appendChild(card);
+    // Выводим фрагмент на страницу
+    MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+  }
+
+  var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
+
+  CLOSE_CARD_BTN.addEventListener('click', closeCard);
+  CLOSE_CARD_BTN.addEventListener('keyup', onCardCloseEnterPress);
+  document.addEventListener('keyup', onCardEscPress);
 };
 
+var closeCard = function () {
+  document.querySelector(PIN_CARDS_SELECTOR).classList.add(CARD_MOD_HIDDEN);
+  document.removeEventListener('keyup', onCardEscPress);
+};
+
+var onCardEscPress = function (evt) {
+  if (evt.key === ESC_KEY) {
+    closeCard();
+  }
+};
+
+var onCardCloseEnterPress = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    closeCard();
+  }
+};
 
 // Конструктор объектов рекламных объявлений
 function Advertisement(userId) {
@@ -355,11 +412,10 @@ for (var i = 1; i <= ADS_COUNT; i++) {
 }
 
 console.log(ads);
-
 // Переводим страницу в неактивный режим
 setNonActiveMode();
 setAddress('center');
-setAvailableCapacity('1');
+setAvailableCapacity(DEFAULT_CAPACITY);
 FORM.querySelector('.js-flat-type').addEventListener('change', onFlatTypeChange);
 
 FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
