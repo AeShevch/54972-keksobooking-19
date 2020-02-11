@@ -234,6 +234,12 @@ var onTimeChange = function (evt) {
   document.querySelector(TIME_FIELD_SELECTOR + ':not(#' + evt.target.id + ')').value = evt.target.value;
 };
 
+var checkSelectValidity = function (select) {
+  if (select.selectedOptions[0].disabled) {
+    select.setCustomValidity('Выбран некорректный пункт');
+  }
+};
+
 var setAvailableCapacity = function (value) {
   switch (value) {
     case ONE_ROOM_OPTION_VALUE:
@@ -259,6 +265,7 @@ var setAvailableCapacity = function (value) {
     default:
       throw new Error('Некорректное значение поля «Количество комнат»');
   }
+  checkSelectValidity(CAPACITY_FIELD);
 };
 
 var onRoomsCountChange = function (evt) {
@@ -370,6 +377,10 @@ var onCardCloseEnterPress = function (evt) {
   }
 };
 
+var capacityFieldOnChange = function () {
+  checkSelectValidity(CAPACITY_FIELD);
+};
+
 // Конструктор объектов рекламных объявлений
 function Advertisement(userId) {
   this.userId = userId;
@@ -411,7 +422,6 @@ for (var i = 1; i <= ADS_COUNT; i++) {
   ads.push(new Advertisement(i));
 }
 
-console.log(ads);
 // Переводим страницу в неактивный режим
 setNonActiveMode();
 setAddress('center');
@@ -423,3 +433,5 @@ FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
 });
 
 FORM.querySelector('.js-rooms-count-field').addEventListener('change', onRoomsCountChange);
+
+CAPACITY_FIELD.addEventListener('change', capacityFieldOnChange);
