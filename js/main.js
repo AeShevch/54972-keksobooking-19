@@ -94,11 +94,7 @@ var fragment = document.createDocumentFragment();
 
 // Возвращает случайный элемент массива
 var getRandomElem = function (arr) {
-  // console.log('<------');
   var temp = arr[getGetRandomNumber(0, arr.length - 1)];
-  // console.log('arr.length = ' + arr.length);
-  // console.log(temp);
-  // console.log('<------');
   return temp;
 };
 
@@ -115,7 +111,6 @@ var getGetRandomNumber = function (min, max) {
   var maxValue = max ? max : 9;
 
   var temp = Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
-  // console.log('number = ' + temp);
   return temp;
 };
 
@@ -272,6 +267,21 @@ var onRoomsCountChange = function (evt) {
   setAvailableCapacity(evt.target.value);
 };
 
+var getCardTypeText = function (cardType) {
+  switch (cardType) {
+    case 'bungalo':
+      return 'Бунгало';
+    case 'house':
+      return 'Дом';
+    case 'palace':
+      return 'Дворец';
+    case 'flat':
+      return 'Квартира';
+    default:
+      throw new Error('Некорректный тип квартиры');
+  }
+};
+
 var showAdInfoCard = function (pin) {
   var card = document.querySelector(PIN_CARDS_SELECTOR);
   var cardIsExists = true;
@@ -319,24 +329,7 @@ var showAdInfoCard = function (pin) {
   card.querySelector('.js-card-avatar').src = currentAd.author.avatar;
 
   // Подставляем значения типа квартиры
-  var cardType = '';
-  switch (currentAd.offer.type) {
-    case 'bungalo':
-      cardType = 'Бунгало';
-      break;
-    case 'house':
-      cardType = 'Дом';
-      break;
-    case 'palace':
-      cardType = 'Дворец';
-      break;
-    case 'flat':
-      cardType = 'Квартира';
-      break;
-    default:
-      throw new Error('Некорректный тип квартиры');
-  }
-  card.querySelector('.js-card-type').textContent = cardType;
+  card.querySelector('.js-card-type').textContent = getCardTypeText(currentAd.offer.type);
 
   // Показываем все элементы features, которые у нас есть в массиве
   var featuresBlock = card.querySelector('.js-card-features');
@@ -393,8 +386,8 @@ function Advertisement(userId) {
     'address': getGetRandomNumber(0, 999) + ',' + getGetRandomNumber(0, 999),
     'price': getGetRandomNumber(0, 9999),
     'type': getRandomElem(ROOM_TYPES),
-    'rooms': getGetRandomNumber(),
-    'guests': getGetRandomNumber(),
+    'rooms': getGetRandomNumber(1),
+    'guests': getGetRandomNumber(1),
     'checkin': getRandomElem(TIMES),
     'checkout': getRandomElem(TIMES),
     'features': getRandomNumberOfItems(FEATURES),
