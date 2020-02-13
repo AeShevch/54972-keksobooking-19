@@ -94,8 +94,7 @@ var fragment = document.createDocumentFragment();
 
 // Возвращает случайный элемент массива
 var getRandomElem = function (arr) {
-  var temp = arr[getGetRandomNumber(0, arr.length - 1)];
-  return temp;
+  return arr[getGetRandomNumber(0, arr.length - 1)];
 };
 
 // Возвращает копию массива случайной длинны
@@ -110,8 +109,7 @@ var getGetRandomNumber = function (min, max) {
   var minValue = min ? min : 0;
   var maxValue = max ? max : 9;
 
-  var temp = Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
-  return temp;
+  return Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
 };
 
 var createPinHtml = function (ad) {
