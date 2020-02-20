@@ -4,8 +4,8 @@
   // Шаблон меток
   var TEMPLATE = document.getElementById('pin').content.querySelector(PIN_SELECTOR);
   // Размер метки
-  var WIDTH = 50;
-  var HEIGHT = 70;
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
 
   // Максимальное и минимальное расположение метки по вертикали
   var MAX_POSITION_Y = 630;
@@ -33,7 +33,7 @@
 
   var addPinsOnMap = function () {
     // Создаём по метке на каждое объявление
-    ads.forEach(function (ad) {
+    window.data.ads.forEach(function (ad) {
       createPinHtml(ad);
     });
 
@@ -42,25 +42,26 @@
   };
 
   var onPinEnterPress = function (evt) {
-    if (evt.key === ENTER_KEY) {
-      showAdInfoCard(evt);
-    }
-  };
-  var onPinMouseDown = function (evt) {
-    if (evt.button === 0) {
-      setActiveMode();
-    }
-    setAddress();
+    window.utils.isEnterEvent(evt, function () {
+      window.card.show(evt.currentTarget);
+    });
   };
 
-  MAP.querySelectorAll(PIN_SELECTOR).forEach(function (pin) {
-    pin.addEventListener('click', function () {
-      showAdInfoCard(pin);
+  var setHandlers = function (mapSelector) {
+    mapSelector.querySelectorAll(PIN_SELECTOR).forEach(function (pin) {
+      pin.addEventListener('click', function () {
+        window.card.show(pin);
+      });
+      pin.addEventListener('keydown', function () {
+        onPinEnterPress(pin);
+      });
     });
-    pin.addEventListener('keydown', function () {
-      onPinEnterPress(pin);
-    });
-  });
+  };
+
+  var removeHandlers = function () {
+    document.removeEventListener('click', window.card.show);
+    document.removeEventListener('keydown', onPinEnterPress);
+  };
 
   window.pin = {
     // WIDTH: WIDTH,
@@ -69,7 +70,9 @@
       MAX: MAX_POSITION_Y,
       MIN: MIN_POSITION_Y
     },
-    addOnMap: addPinsOnMap
+    addOnMap: addPinsOnMap,
+    setHandlers: setHandlers,
+    removeHandlers: removeHandlers
   };
 
 })();

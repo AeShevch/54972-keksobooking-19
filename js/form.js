@@ -27,10 +27,9 @@
   var ADDRESS_FIELD = document.getElementById('address');
 
   var setAddress = function (type) {
-
-
-    ADDRESS_FIELD.value = coordinatesX + ', ' + coordinatesY;
+    ADDRESS_FIELD.value = window.map.getPinCoordinates(type).x + ', ' + window.map.getPinCoordinates(type).y;
   };
+
   var changeAdMinPrice = function (input, minPrice) {
     input.min = minPrice;
     input.placeholder = minPrice;
@@ -97,26 +96,15 @@
     setAvailableCapacity(evt.target.value);
   };
 
-  var getCardTypeText = function (cardType) {
-    switch (cardType) {
-      case 'bungalo':
-        return 'Бунгало';
-      case 'house':
-        return 'Дом';
-      case 'palace':
-        return 'Дворец';
-      case 'flat':
-        return 'Квартира';
-      default:
-        throw new Error('Некорректный тип квартиры');
-    }
-  };
   var enableForm = function () {
     FORM.classList.remove(FORM_DISABLED_MOD);
+    enableFields();
   };
 
   var disableForm = function () {
     FORM.classList.add(FORM_DISABLED_MOD);
+    disableFields();
+    setAddress();
   };
   var disableFields = function () {
     FIELDS_TO_DISABLE.forEach(function (fieldset) {
@@ -146,9 +134,6 @@
   window.form = {
     enable: enableForm,
     disable: disableForm,
-    fields: {
-      disable: disableFields,
-      enable: enableFields
-    }
+    setAddress: setAddress
   };
 })();

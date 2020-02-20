@@ -23,11 +23,27 @@
     return Math.floor(minValue + Math.random() * (maxValue + 1 - minValue));
   };
 
+  // ХЭНДЛЕРЫ
+  // Хэндлер на нажатие клавиши Esc, принимает параметрами эвент и функцию, которую необходимо выполнить
+  var isEscapeEvent = function (evt, action) {
+    if (evt.key === ESC_KEY) {
+      action();
+    }
+  };
+  // Хэндлер на нажатие клавиши Enter, принимает параметрами эвент и функцию, которую необходимо выполнить
+  var isEnterEvent = function (evt, action) {
+    if (evt.key === ENTER_KEY) {
+      action();
+    }
+  };
+
   window.utils = {
+    ESC_KEY: ESC_KEY,
+    ENTER_KEY: ENTER_KEY,
+    isEnterEvent: isEnterEvent,
+    isEscapeEvent: isEscapeEvent,
     getRandomElem: getRandomElem,
     getRandomNumberOfItems: getRandomNumberOfItems,
     getGetRandomNumber: getGetRandomNumber,
-    ESC_KEY: ESC_KEY,
-    ENTER_KEY: ENTER_KEY
   };
 })();

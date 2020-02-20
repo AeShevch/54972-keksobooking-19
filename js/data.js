@@ -81,6 +81,29 @@
     ads.push(new Advertisement(i));
   }
 
+  var cardTypesMap = {
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец',
+    'flat': 'Квартира',
+  };
+
+
+  var getCardTypeText = function (cardType) {
+    switch (cardType) {
+      case 'bungalo':
+        return 'Бунгало';
+      case 'house':
+        return 'Дом';
+      case 'palace':
+        return 'Дворец';
+      case 'flat':
+        return 'Квартира';
+      default:
+        throw new Error('Некорректный тип квартиры');
+    }
+  };
+
   window.data = {
     ads: ads,
   };
