@@ -3,6 +3,7 @@
   // Массив объектов объявлений
   var ads = [];
 
+  // TODO Точно это нужно?
   var ROOM_TYPES = [
     'palace',
     'flat',
@@ -36,6 +37,20 @@
     'A cozy private space! Mixed Dormitory with Wi-Fi',
     'apartment hotel TASU TOCO',
   ];
+
+  var adsPricesMap = {
+    'palace': 10000,
+    'flat': 1000,
+    'house': 5000,
+    'bungalo': 0,
+  };
+
+  var roomsToProhibitedGuestsCount = {
+    '1': [2, 3, 0],
+    '2': [3, 0],
+    '3': [0],
+    '100': [1, 2, 3]
+  };
 
   // Количество объявлений
   var ADS_COUNT = 8;
@@ -88,23 +103,10 @@
     'flat': 'Квартира',
   };
 
-
-  var getCardTypeText = function (cardType) {
-    switch (cardType) {
-      case 'bungalo':
-        return 'Бунгало';
-      case 'house':
-        return 'Дом';
-      case 'palace':
-        return 'Дворец';
-      case 'flat':
-        return 'Квартира';
-      default:
-        throw new Error('Некорректный тип квартиры');
-    }
-  };
-
   window.data = {
     ads: ads,
+    cardTypesMap: cardTypesMap,
+    adsPricesMap: adsPricesMap,
+    roomsToProhibitedGuestsCount: roomsToProhibitedGuestsCount
   };
 })();

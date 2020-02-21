@@ -64,7 +64,7 @@
     card.querySelector('.js-card-avatar').src = currentAd.author.avatar;
 
     // Подставляем значения типа квартиры
-    card.querySelector('.js-card-type').textContent = getCardTypeText(currentAd.offer.type);
+    card.querySelector('.js-card-type').textContent = window.data.cardTypesMap[currentAd.offer.type];
 
     // Показываем все элементы features, которые у нас есть в массиве
     var featuresBlock = card.querySelector('.js-card-features');
@@ -78,7 +78,7 @@
       // заполняем фрагмент
       cardFragment.appendChild(card);
       // Выводим фрагмент на страницу
-      MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+      window.map.insertCard(cardFragment);
     }
 
     var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
@@ -86,9 +86,9 @@
     CLOSE_CARD_BTN.addEventListener('click', closeCard);
     CLOSE_CARD_BTN.addEventListener('keyup', onCardCloseEnterPress);
     document.addEventListener('keyup', onCardEscPress);
+  };
 
-    window.card = {
-      show: showAdInfoCard
-    };
+  window.card = {
+    show: showAdInfoCard
   };
 })();

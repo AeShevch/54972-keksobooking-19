@@ -1,33 +1,18 @@
 'use strict';
 (function () {
+  // КОНСТАНТЫ
   var FORM = document.querySelector('.ad-form');
   var FORM_DISABLED_MOD = 'ad-form--disabled';
   var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
   var TIME_FIELD_SELECTOR = '.js-time-field';
   var PRICE_FIELD = document.querySelector('.js-ad-price');
+  var ADDRESS_FIELD = document.getElementById('address');
   var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
   var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
-  var DEFAULT_CAPACITY = '1';
+  var ROOMS_COUNT_FIELD = FORM.querySelector('.js-rooms-count-field');
 
-  var BUNGALO_MIN_PRICE = 0;
-  var FLAT_MIN_PRICE = 1000;
-  var HOUSE_MIN_PRICE = 5000;
-  var PALACE_MIN_PRICE = 10000;
-
-  var ONE_GUEST_OPTION_VALUE = '1';
-  var TWO_GUESTS_OPTION_VALUE = '2';
-  var NOT_FOR_GUESTS_OPTION_VALUE = '0';
-
-  var ONE_ROOM_OPTION_VALUE = '1';
-  var TWO_ROOMS_OPTION_VALUE = '2';
-  var THREE_ROOMS_OPTION_VALUE = '3';
-  var HUNDRED_ROOM_OPTION_VALUE = '100';
-
-
-  var ADDRESS_FIELD = document.getElementById('address');
-
-  var setAddress = function (type) {
-    ADDRESS_FIELD.value = window.map.getPinCoordinates(type).x + ', ' + window.map.getPinCoordinates(type).y;
+  var setAddress = function () {
+    ADDRESS_FIELD.value = window.map.getPinCoordinates().x + ', ' + window.map.getPinCoordinates().y;
   };
 
   var changeAdMinPrice = function (input, minPrice) {
@@ -36,22 +21,7 @@
   };
 
   var onFlatTypeChange = function (evt) {
-    switch (evt.target.selectedOptions[0].value) {
-      case 'bungalo':
-        changeAdMinPrice(PRICE_FIELD, BUNGALO_MIN_PRICE);
-        break;
-      case 'flat':
-        changeAdMinPrice(PRICE_FIELD, FLAT_MIN_PRICE);
-        break;
-      case 'house':
-        changeAdMinPrice(PRICE_FIELD, HOUSE_MIN_PRICE);
-        break;
-      case 'palace':
-        changeAdMinPrice(PRICE_FIELD, PALACE_MIN_PRICE);
-        break;
-      default:
-        throw new Error('Некорректное значение поля «Тип жилья»');
-    }
+    changeAdMinPrice(PRICE_FIELD, window.data.adsPricesMap[evt.target.selectedOptions[0].value]);
   };
 
   var onTimeChange = function (evt) {
@@ -64,31 +34,10 @@
     }
   };
 
-  var setAvailableCapacity = function (value) {
-    switch (value) {
-      case ONE_ROOM_OPTION_VALUE:
-        CAPACITY_OPTIONS.forEach(function (option) {
-          option.disabled = option.value !== ONE_GUEST_OPTION_VALUE;
-        });
-        break;
-      case TWO_ROOMS_OPTION_VALUE:
-        CAPACITY_OPTIONS.forEach(function (option) {
-          option.disabled = !(option.value === ONE_GUEST_OPTION_VALUE || option.value === TWO_GUESTS_OPTION_VALUE);
-        });
-        break;
-      case THREE_ROOMS_OPTION_VALUE:
-        CAPACITY_OPTIONS.forEach(function (option) {
-          option.disabled = option.value === NOT_FOR_GUESTS_OPTION_VALUE;
-        });
-        break;
-      case HUNDRED_ROOM_OPTION_VALUE:
-        CAPACITY_OPTIONS.forEach(function (option) {
-          option.disabled = option.value !== NOT_FOR_GUESTS_OPTION_VALUE;
-        });
-        break;
-      default:
-        throw new Error('Некорректное значение поля «Количество комнат»');
-    }
+  var setAvailableCapacity = function (rooms) {
+    CAPACITY_OPTIONS.forEach(function (option) {
+      option.disabled = window.data.roomsToProhibitedGuestsCount[rooms].indexOf(parseInt(option.value, 10)) !== -1;
+    });
     checkSelectValidity(CAPACITY_FIELD);
   };
 
@@ -98,6 +47,7 @@
 
   var enableForm = function () {
     FORM.classList.remove(FORM_DISABLED_MOD);
+    setAvailableCapacity(ROOMS_COUNT_FIELD.value);
     enableFields();
   };
 
@@ -108,19 +58,18 @@
   };
   var disableFields = function () {
     FIELDS_TO_DISABLE.forEach(function (fieldset) {
-      fieldset.removeAttribute('disabled');
+      fieldset.setAttribute('disabled', 'disabled');
     });
   };
 
   var enableFields = function () {
     FIELDS_TO_DISABLE.forEach(function (fieldset) {
-      fieldset.setAttribute('disabled', 'disabled');
+      fieldset.removeAttribute('disabled');
     });
   };
   var capacityFieldOnChange = function () {
     checkSelectValidity(CAPACITY_FIELD);
   };
-  setAvailableCapacity(DEFAULT_CAPACITY);
   FORM.querySelector('.js-flat-type').addEventListener('change', onFlatTypeChange);
 
   FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
@@ -130,6 +79,13 @@
   FORM.querySelector('.js-rooms-count-field').addEventListener('change', onRoomsCountChange);
 
   CAPACITY_FIELD.addEventListener('change', capacityFieldOnChange);
+
+  var init = function () {
+    disableForm();
+    setAddress();
+  };
+
+  init();
 
   window.form = {
     enable: enableForm,

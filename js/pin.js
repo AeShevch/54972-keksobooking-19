@@ -63,9 +63,13 @@
     document.removeEventListener('keydown', onPinEnterPress);
   };
 
+  var init = function (mapSelector) {
+    addPinsOnMap(window.data.ads);
+    setHandlers(mapSelector);
+  };
+
   window.pin = {
-    // WIDTH: WIDTH,
-    // HEIGHT: HEIGHT,
+    init: init,
     positionY: {
       MAX: MAX_POSITION_Y,
       MIN: MIN_POSITION_Y
