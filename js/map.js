@@ -1,6 +1,8 @@
 'use strict';
 (function () {
-  // КОНСТАНТЫ
+  /*
+  * Константы
+  * */
   var MAP = document.querySelector('.js-map-container');
   var WIDTH = MAP.offsetWidth;
   var MAIN_PIN = MAP.querySelector('.js-main-pin');
@@ -9,10 +11,12 @@
   var MAIN_PIN_WIDTH = MAIN_PIN.offsetWidth;
   var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
 
-  // По умолчанию карта выключена
+  // Флаг активности карты. По умолчанию карта выключена
   var mapIsActive = false;
 
-  // ХЭНДЛЕРЫ
+  /*
+  * Хэндлеры
+  * */
   // Нажатие клавиши Enter на главной метке
   var onMainPinEnterPress = function (evt) {
     window.utils.isEnterEvent(evt, setActiveMode);
@@ -25,29 +29,35 @@
     window.form.setAddress();
   };
 
-  // ФУНКЦИИ
-  // Возвращает координат главной метки. Если страница неактивно, то возврщает координаты центра страницы
+  /*
+  * Функции
+  * */
+  // Возвращает координаты главной метки. Если страница неактивно, то возврщает координаты центра страницы
   var getPinCoordinates = function () {
     return {
       x: Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2),
       y: Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (mapIsActive ? MAIN_PIN_HEIGHT : MAIN_PIN_HEIGHT / 2)),
     };
   };
-  // Показывает карточку объявления
-  var insertCard = function (cardFragment) {
-    MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
-  };
+
   // Запускает активный режим
   var setActiveMode = function () {
-    // TODO При клике на главную метку перезагружаюся пины, нужно удалять хэндлеры в активном режиме
+    // Флаг активности
     mapIsActive = true;
+    // Убираем overlay
     MAP.classList.remove('map--faded');
     // Добавляем пины на карту
     window.pin.init(MAP);
+    // Отключаем хэндлеры на главной метке
+    document.removeEventListener('mousedown', onMainPinMouseDown);
+    document.removeEventListener('keyup', onMainPinEnterPress);
     // Включаем форму
     window.form.enable();
   };
 
+  /*
+  * Иницализация модуля
+  * */
   var init = function () {
     MAIN_PIN.addEventListener('mousedown', onMainPinMouseDown);
     MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
@@ -55,9 +65,11 @@
 
   init();
 
+  /*
+  * Интерфейс
+  * */
   window.map = {
     WIDTH: WIDTH,
-    getPinCoordinates: getPinCoordinates,
-    insertCard: insertCard,
+    getPinCoordinates: getPinCoordinates
   };
 })();

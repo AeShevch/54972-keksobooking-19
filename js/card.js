@@ -1,22 +1,37 @@
 'use strict';
 (function () {
+  /*
+  * Константы
+  * */
+  var MAP = document.querySelector('.js-map-container');
   var PIN_CARDS_SELECTOR = '.js-pin-card';
   var CARD_MOD_HIDDEN = 'map__card_hidden';
 
-
-  var closeCard = function () {
-    document.querySelector(PIN_CARDS_SELECTOR).classList.add(CARD_MOD_HIDDEN);
-    document.removeEventListener('keyup', onCardEscPress);
-  };
-
+  /*
+  * Хэндлеры
+  * */
+  // Нажатие Esc при открытой карточке
   var onCardEscPress = function (evt) {
     window.utils.isEscapeEvent(evt, closeCard);
   };
-
+  // Нажатие Enter на кнопке закрытия карточки
   var onCardCloseEnterPress = function (evt) {
     window.utils.isEnterEvent(evt, closeCard);
   };
 
+  /*
+  * Функции
+  * */
+  // Закрывает карточку
+  var closeCard = function () {
+    document.querySelector(PIN_CARDS_SELECTOR).classList.add(CARD_MOD_HIDDEN);
+    document.removeEventListener('keyup', onCardEscPress);
+  };
+  // Показывает карточку объявления
+  var insertCard = function (cardFragment) {
+    MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+  };
+  // Создаёт новую карточку и вставляет её на страницу
   var showAdInfoCard = function (pin) {
     var card = document.querySelector(PIN_CARDS_SELECTOR);
     var cardIsExists = true;
@@ -28,11 +43,6 @@
       var cardFragment = document.createDocumentFragment();
       // Клонируем шаблон
       card = CARD_TEMPLATE.cloneNode(true);
-    }
-
-    // Показываем карточку, если она скрыта
-    if (cardIsExists && card.classList.contains(CARD_MOD_HIDDEN)) {
-      card.classList.remove(CARD_MOD_HIDDEN);
     }
 
     // Id пользователя начинаются с 1, а элементы массива с 0
@@ -78,7 +88,7 @@
       // заполняем фрагмент
       cardFragment.appendChild(card);
       // Выводим фрагмент на страницу
-      window.map.insertCard(cardFragment);
+      insertCard(cardFragment);
     }
 
     var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
@@ -86,8 +96,16 @@
     CLOSE_CARD_BTN.addEventListener('click', closeCard);
     CLOSE_CARD_BTN.addEventListener('keyup', onCardCloseEnterPress);
     document.addEventListener('keyup', onCardEscPress);
+
+    // Показываем карточку, если она скрыта
+    if (cardIsExists && card.classList.contains(CARD_MOD_HIDDEN)) {
+      card.classList.remove(CARD_MOD_HIDDEN);
+    }
   };
 
+  /*
+  * Интерфейс
+  * */
   window.card = {
     show: showAdInfoCard
   };
