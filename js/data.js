@@ -1,16 +1,9 @@
 'use strict';
 (function () {
-  // Массив объектов объявлений
-  var ads = [];
-
-  // TODO Точно это нужно?
-  var ROOM_TYPES = [
-    'palace',
-    'flat',
-    'house',
-    'bungalo',
-  ];
-
+  /*
+  * Входные данные
+  * */
+  // Доступные удобства
   var FEATURES = [
     'wifi',
     'dishwasher',
@@ -19,13 +12,13 @@
     'elevator',
     'conditioner',
   ];
-
+  // Время заезда
   var TIMES = [
     '12:00',
     '13:00',
     '14:00',
   ];
-
+  // Моки названий объявлений
   var TITLES = [
     'Calm House near Shinjuku/Shibuya',
     'New design capsule hotel (co-ed, no lock)',
@@ -37,24 +30,35 @@
     'A cozy private space! Mixed Dormitory with Wi-Fi',
     'apartment hotel TASU TOCO',
   ];
-
+  // Словарь минимальных стоимостей
   var adsPricesMap = {
     'palace': 10000,
     'flat': 1000,
     'house': 5000,
     'bungalo': 0,
   };
-
+  // Словарь запрещённых значений количества гостей для определённых количеств комнат
   var roomsToProhibitedGuestsCount = {
     '1': [2, 3, 0],
     '2': [3, 0],
     '3': [0],
     '100': [1, 2, 3]
   };
-
+  // Словарь соответствий типов квартир
+  var cardTypesMap = {
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец',
+    'flat': 'Квартира',
+  };
   // Количество объявлений
   var ADS_COUNT = 8;
+  // Массив для записи объявлений
+  var ads = [];
 
+  /*
+  * Функции
+  * */
   // Конструктор объектов рекламных объявлений
   function Advertisement(userId) {
     this.userId = userId;
@@ -66,14 +70,14 @@
       'title': window.utils.getRandomElem(TITLES),
       'address': window.utils.getGetRandomNumber(0, 999) + ',' + window.utils.getGetRandomNumber(0, 999),
       'price': window.utils.getGetRandomNumber(0, 9999),
-      'type': window.utils.getRandomElem(ROOM_TYPES),
+      'type': window.utils.getRandomObjectKey(adsPricesMap),
       'rooms': window.utils.getGetRandomNumber(1),
       'guests': window.utils.getGetRandomNumber(1),
       'checkin': window.utils.getRandomElem(TIMES),
       'checkout': window.utils.getRandomElem(TIMES),
       'features': window.utils.getRandomNumberOfItems(FEATURES),
       'description': 'description',
-      'photos': this.getRandomPhotos(),
+      'photos': getRandomPhotos(),
     };
 
     this.location = {
@@ -81,9 +85,8 @@
       'y': window.utils.getGetRandomNumber(window.pin.positionY.MIN, window.pin.positionY.MAX),
     };
   }
-
-  // Возвращает изображения со случайным индексом
-  Advertisement.prototype.getRandomPhotos = function () {
+  // Возвращает изображение со случайным индексом
+  var getRandomPhotos = function () {
     var arr = [];
     for (var i = 1; i <= window.utils.getGetRandomNumber(1, 3); i++) {
       arr.push('http://o0.github.io/assets/images/tokyo/hotel' + i + '.jpg');
@@ -91,18 +94,21 @@
     return arr;
   };
 
-  // Создаём массив с указанным количеством объявлений
-  for (var i = 1; i <= ADS_COUNT; i++) {
-    ads.push(new Advertisement(i));
-  }
-
-  var cardTypesMap = {
-    'bungalo': 'Бунгало',
-    'house': 'Дом',
-    'palace': 'Дворец',
-    'flat': 'Квартира',
+  /*
+  * Иницализация модуля
+  * */
+  var init = function () {
+    // Создаём массив с указанным количеством объявлений
+    for (var i = 1; i <= ADS_COUNT; i++) {
+      ads.push(new Advertisement(i));
+    }
   };
 
+  init();
+
+  /*
+  * Интерфейс
+  * */
   window.data = {
     ads: ads,
     cardTypesMap: cardTypesMap,

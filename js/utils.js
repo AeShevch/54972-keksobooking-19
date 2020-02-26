@@ -29,6 +29,11 @@
   var getRandomElem = function (arr) {
     return arr[getGetRandomNumber(0, arr.length - 1)];
   };
+  // Возвращает ключ случайного элемента объекта
+  var getRandomObjectKey = function (obj) {
+    var keys = Object.keys(obj);
+    return keys[getGetRandomNumber(0, keys.length - 1)];
+  };
   // Возвращает копию массива случайной длинны
   var getRandomNumberOfItems = function (arr) {
     var startRndIndex = getGetRandomNumber(1, arr.length);
@@ -55,5 +60,6 @@
     getRandomElem: getRandomElem,
     getRandomNumberOfItems: getRandomNumberOfItems,
     getGetRandomNumber: getGetRandomNumber,
+    getRandomObjectKey: getRandomObjectKey
   };
 })();
