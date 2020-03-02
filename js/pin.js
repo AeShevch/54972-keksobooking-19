@@ -69,7 +69,7 @@
   };
 
   /*
-  * Иницализация модуля
+  * Инициализация модуля
   * */
   var init = function (mapSelector) {
     addPinsOnMap(window.data.ads);

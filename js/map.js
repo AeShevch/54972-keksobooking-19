@@ -19,11 +19,13 @@
   * */
   // Нажатие клавиши Enter на главной метке
   var onMainPinEnterPress = function (evt) {
-    window.utils.isEnterEvent(evt, setActiveMode);
+    if (!mapIsActive) {
+      window.utils.isEnterEvent(evt, setActiveMode);
+    }
   };
   // Клик по главной метке
-  var onMainPinMouseDown = function (evt) {
-    if (evt.button === 0) {
+  var onMainPinMouseUp = function (evt) {
+    if (evt.button === 0 && !mapIsActive) {
       setActiveMode();
     }
     window.form.setAddress();
@@ -49,17 +51,20 @@
     // Добавляем пины на карту
     window.pin.init(MAP);
     // Отключаем хэндлеры на главной метке
-    document.removeEventListener('mousedown', onMainPinMouseDown);
+    document.removeEventListener('mouseup', onMainPinMouseUp);
     document.removeEventListener('keyup', onMainPinEnterPress);
     // Включаем форму
     window.form.enable();
+    // Включает перетаскивание главной метки
+    window.utils.dragNdropInit(MAIN_PIN, MAP);
+
   };
 
   /*
-  * Иницализация модуля
+  * Инициализация модуля
   * */
   var init = function () {
-    MAIN_PIN.addEventListener('mousedown', onMainPinMouseDown);
+    MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
     MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
   };
 

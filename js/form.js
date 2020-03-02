@@ -17,21 +17,21 @@
   * Хэндлеры
   * */
   // Изменение типа жилья
-  var onFlatTypeChange = function (evt) {
-    changeAdMinPrice(PRICE_FIELD, window.data.adsPricesMap[evt.target.selectedOptions[0].value]);
+  var _onFlatTypeChange = function (evt) {
+    _changeAdMinPrice(PRICE_FIELD, window.data.adsPricesMap[evt.target.selectedOptions[0].value]);
   };
   // Изменение времени заезда и выезда
-  var onTimeChange = function (evt) {
+  var _onTimeChange = function (evt) {
     // Синхонизирует время заезда и выезда
     document.querySelector(TIME_FIELD_SELECTOR + ':not(#' + evt.target.id + ')').value = evt.target.value;
   };
   // Изменение количества комнат
-  var onRoomsCountChange = function (evt) {
-    setAvailableCapacity(evt.target.value);
+  var _onRoomsCountChange = function (evt) {
+    _setAvailableCapacity(evt.target.value);
   };
   // Изменение количества гостей
-  var capacityFieldOnChange = function () {
-    checkSelectValidity(CAPACITY_FIELD);
+  var _capacityFieldOnChange = function () {
+    _checkSelectValidity(CAPACITY_FIELD);
   };
 
   /*
@@ -42,31 +42,31 @@
     ADDRESS_FIELD.value = window.map.getPinCoordinates().x + ', ' + window.map.getPinCoordinates().y;
   };
   // Изменяет минимальную стоимость
-  var changeAdMinPrice = function (input, minPrice) {
+  var _changeAdMinPrice = function (input, minPrice) {
     input.min = minPrice;
     input.placeholder = minPrice;
   };
   // Устанавливает сообщение об ошибке, если выбрана отключенная опция
-  var checkSelectValidity = function (select) {
+  var _checkSelectValidity = function (select) {
     if (select.selectedOptions[0].disabled) {
       select.setCustomValidity('Выбран некорректный пункт');
     }
   };
   // Отключает неподходящие для типа жилья опции количества гостей
-  var setAvailableCapacity = function (rooms) {
+  var _setAvailableCapacity = function (rooms) {
     CAPACITY_OPTIONS.forEach(function (option) {
       option.disabled = window.data.roomsToProhibitedGuestsCount[rooms].indexOf(parseInt(option.value, 10)) !== -1;
     });
-    checkSelectValidity(CAPACITY_FIELD);
+    _checkSelectValidity(CAPACITY_FIELD);
   };
   // Отключает поля формы
-  var disableFields = function () {
+  var _disableFields = function () {
     FIELDS_TO_DISABLE.forEach(function (fieldset) {
       fieldset.setAttribute('disabled', 'disabled');
     });
   };
   // Включает поля формы
-  var enableFields = function () {
+  var _enableFields = function () {
     FIELDS_TO_DISABLE.forEach(function (fieldset) {
       fieldset.removeAttribute('disabled');
     });
@@ -74,39 +74,39 @@
   // Активирует форму
   var enableForm = function () {
     FORM.classList.remove(FORM_DISABLED_MOD);
-    setAvailableCapacity(ROOMS_COUNT_FIELD.value);
-    enableFields();
-    setHandlers();
+    _setAvailableCapacity(ROOMS_COUNT_FIELD.value);
+    _enableFields();
+    _setHandlers();
   };
   // Выключает форму
-  var disableForm = function () {
+  var _disableForm = function () {
     FORM.classList.add(FORM_DISABLED_MOD);
-    disableFields();
+    _disableFields();
     setAddress();
-    removeHandlers();
+    _removeHandlers();
   };
   // Добавляет хэндлеры
-  var setHandlers = function () {
-    FORM.querySelector('.js-flat-type').addEventListener('change', onFlatTypeChange);
+  var _setHandlers = function () {
+    FORM.querySelector('.js-flat-type').addEventListener('change', _onFlatTypeChange);
     FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
-      timeField.addEventListener('change', onTimeChange);
+      timeField.addEventListener('change', _onTimeChange);
     });
-    FORM.querySelector('.js-rooms-count-field').addEventListener('change', onRoomsCountChange);
-    CAPACITY_FIELD.addEventListener('change', capacityFieldOnChange);
+    FORM.querySelector('.js-rooms-count-field').addEventListener('change', _onRoomsCountChange);
+    CAPACITY_FIELD.addEventListener('change', _capacityFieldOnChange);
   };
   // Удаляет хэндлеры
-  var removeHandlers = function () {
-    document.removeEventListener('change', onFlatTypeChange);
-    document.removeEventListener('change', onTimeChange);
-    document.removeEventListener('change', onRoomsCountChange);
-    document.removeEventListener('change', capacityFieldOnChange);
+  var _removeHandlers = function () {
+    document.removeEventListener('change', _onFlatTypeChange);
+    document.removeEventListener('change', _onTimeChange);
+    document.removeEventListener('change', _onRoomsCountChange);
+    document.removeEventListener('change', _capacityFieldOnChange);
   };
 
   /*
-  * Иницализация модуля
+  * Инициализация модуля
   * */
   var init = function () {
-    disableForm();
+    _disableForm();
     setAddress();
   };
 
