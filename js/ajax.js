@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  window.load = function (url, onSuccess, onError) {
+  window.ajax = function (url, onSuccess, onError, type, data) {
     var TIMEOUT = 10000;
     var xhr = new XMLHttpRequest();
 
@@ -24,7 +24,7 @@
 
     xhr.timeout = TIMEOUT;
 
-    xhr.open('GET', url);
-    xhr.send();
+    xhr.open(type, url);
+    xhr.send(data ? data : '');
   };
 })();

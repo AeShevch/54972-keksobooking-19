@@ -46,7 +46,7 @@
     }
 
     // Id пользователя начинаются с 1, а элементы массива с 0
-    var currentAd = window.data.ads[pin.dataset.id - 1];
+    var currentAd = window.pin.data[pin.dataset.id];
 
     // Вставлем в него данные из элемента массива с объявлениями
     card.querySelector('.js-card-title').textContent = currentAd.offer.title;
@@ -58,17 +58,20 @@
     card.querySelector('.js-card-checkout').textContent = currentAd.offer.checkout;
     card.querySelector('.js-card-desc').textContent = currentAd.offer.description;
 
-    // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
-    var cardImagesBlock = card.querySelector('.js-card-photo');
-    var imagesFragment = document.createDocumentFragment();
-    currentAd.offer.photos.forEach(function (photo) {
-      var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
-      imageHtml.src = photo;
-      imagesFragment.appendChild(imageHtml);
-    });
-    // Очищаем блок и вставлем в него изображения
-    cardImagesBlock.innerHTML = '';
-    cardImagesBlock.appendChild(imagesFragment);
+    if (currentAd.offer.photos) {
+      // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
+      var cardImagesBlock = card.querySelector('.js-card-photo');
+      var imagesFragment = document.createDocumentFragment();
+      currentAd.offer.photos.forEach(function (photo) {
+
+        var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
+        imageHtml.src = photo;
+        imagesFragment.appendChild(imageHtml);
+      });
+      // Очищаем блок и вставлем в него изображения
+      cardImagesBlock.innerHTML = '';
+      cardImagesBlock.appendChild(imagesFragment);
+    }
 
     // Подставляем ссылку на изображение аватара
     card.querySelector('.js-card-avatar').src = currentAd.author.avatar;

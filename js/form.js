@@ -34,6 +34,11 @@
     _checkSelectValidity(CAPACITY_FIELD);
   };
 
+  var _onFormSubmit = function (evt) {
+    evt.preventDefault();
+
+  };
+
   /*
   * Функции
   * */
@@ -93,6 +98,7 @@
     });
     FORM.querySelector('.js-rooms-count-field').addEventListener('change', _onRoomsCountChange);
     CAPACITY_FIELD.addEventListener('change', _capacityFieldOnChange);
+    FORM.addEventListener('submit', _onFormSubmit);
   };
   // Удаляет хэндлеры
   var _removeHandlers = function () {

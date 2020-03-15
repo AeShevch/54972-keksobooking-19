@@ -3,7 +3,9 @@
   /*
   * Константы
   * */
+  var MAP = document.querySelector('.js-map-container');
   var PIN_SELECTOR = '.js-map-pin-template';
+  var URL = 'https://js.dump.academy/keksobooking/data';
   var PINS_CONTAINER = document.querySelector('.map__pins');
   // Шаблон меток
   var TEMPLATE = document.getElementById('pin').content.querySelector(PIN_SELECTOR);
@@ -17,6 +19,8 @@
   // Фрагмент для меток
   var fragment = document.createDocumentFragment();
 
+  var pinsData = {};
+
   /*
   * Хэндлеры
   * */
@@ -26,14 +30,17 @@
     });
   };
 
+  var onAjaxError = function (error) {
+    throw new Error(error);
+  };
+
   /*
   * Функции
   * */
   // Создаёт вёрстку меток во фрагменте
-  var createPinHtml = function (ad) {
+  var createPinHtml = function (ad, index) {
     var pinHtml = TEMPLATE.cloneNode(true);
-
-    pinHtml.dataset.id = ad.userId;
+    pinHtml.dataset.id = index;
 
     // Выставляем положение элемента на карте
     pinHtml.style.top = ad.location.y + PIN_HEIGHT + 'px';
@@ -47,18 +54,20 @@
     fragment.appendChild(pinHtml);
   };
   // Добавляем метки на карту
-  var addPinsOnMap = function () {
+  var addPinsOnMap = function (ads) {
+    window.pin.data = ads;
     // Создаём по метке на каждое объявление
-    window.data.ads.forEach(function (ad) {
-      createPinHtml(ad);
+    ads.forEach(function (ad, index) {
+      createPinHtml(ad, index);
     });
 
     // Вставляем полученный фрагмент на карту
     PINS_CONTAINER.appendChild(fragment);
+    setHandlers(MAP);
   };
   // Добавляет хэндлеры на клик и нажатие enter по меткам
-  var setHandlers = function (mapSelector) {
-    mapSelector.querySelectorAll(PIN_SELECTOR).forEach(function (pin) {
+  var setHandlers = function () {
+    MAP.querySelectorAll(PIN_SELECTOR).forEach(function (pin) {
       pin.addEventListener('click', function () {
         window.card.show(pin);
       });
@@ -71,9 +80,9 @@
   /*
   * Инициализация модуля
   * */
-  var init = function (mapSelector) {
-    addPinsOnMap(window.data.ads);
-    setHandlers(mapSelector);
+  var init = function () {
+    window.ajax(URL, addPinsOnMap, onAjaxError, 'GET');
+    // addPinsOnMap(window.data.ads);
   };
 
   /*
@@ -81,6 +90,7 @@
   * */
   window.pin = {
     init: init,
+    data: pinsData,
     positionY: {
       MAX: MAX_POSITION_Y,
       MIN: MIN_POSITION_Y
