@@ -56,16 +56,30 @@
     // Включаем форму
     window.form.enable();
     // Включает перетаскивание главной метки
-    window.utils.dragNdropInit(MAIN_PIN, MAP);
+    window.utils.dragNdrop.init(MAIN_PIN, MAP);
+  };
 
+  var setNonActiveMode = function () {
+    // Флаг активности
+    mapIsActive = false;
+    // Добавляем overlay
+    MAP.classList.add('map--faded');
+    // Удаляем все пины
+    window.pin.clearMap();
+    // Выключаем форму
+    window.form.disable();
+    // Добавляем хэндлеры на главную метку
+    MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
+    MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
+    // Выключает перетаскивание главной метки
+    window.utils.dragNdrop.remove();
   };
 
   /*
   * Инициализация модуля
   * */
   var init = function () {
-    MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
-    MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
+    setNonActiveMode();
   };
 
   init();
@@ -75,6 +89,7 @@
   * */
   window.map = {
     WIDTH: WIDTH,
+    setNonActiveMode: setNonActiveMode,
     getPinCoordinates: getPinCoordinates
   };
 })();

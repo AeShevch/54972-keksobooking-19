@@ -58,12 +58,12 @@
     card.querySelector('.js-card-checkout').textContent = currentAd.offer.checkout;
     card.querySelector('.js-card-desc').textContent = currentAd.offer.description;
 
+    // Добавляем фотографии объявления
     if (currentAd.offer.photos) {
       // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
       var cardImagesBlock = card.querySelector('.js-card-photo');
       var imagesFragment = document.createDocumentFragment();
       currentAd.offer.photos.forEach(function (photo) {
-
         var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
         imageHtml.src = photo;
         imagesFragment.appendChild(imageHtml);
@@ -81,7 +81,6 @@
 
     // Показываем все элементы features, которые у нас есть в массиве
     var featuresBlock = card.querySelector('.js-card-features');
-
     currentAd.offer.features.forEach(function (feature) {
       featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
     });

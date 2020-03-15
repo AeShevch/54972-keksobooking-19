@@ -4,6 +4,7 @@
   * Константы
   * */
   var FORM = document.querySelector('.ad-form');
+  var URL = 'https://js.dump.academy/keksobooking';
   var FORM_DISABLED_MOD = 'ad-form--disabled';
   var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
   var TIME_FIELD_SELECTOR = '.js-time-field';
@@ -12,6 +13,8 @@
   var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
   var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
   var ROOMS_COUNT_FIELD = FORM.querySelector('.js-rooms-count-field');
+  var SUCCESS_MESSAGE_CLASS = 'success';
+  var SUCCESS_MESSAGE_HTML = document.getElementById(SUCCESS_MESSAGE_CLASS).cloneNode(true).content;
 
   /*
   * Хэндлеры
@@ -34,9 +37,25 @@
     _checkSelectValidity(CAPACITY_FIELD);
   };
 
+  var _onAjaxError = function (error) {
+    throw new Error(error);
+  };
+
+  var _onAjaxSuccess = function () {
+    window.map.setNonActiveMode();
+    FORM.reset();
+    disableForm();
+    _showSuccessMessage();
+  };
+
   var _onFormSubmit = function (evt) {
     evt.preventDefault();
+    var data = new FormData(document.querySelector('.ad-form'));
+    window.ajax(URL, _onAjaxSuccess, _onAjaxError,'POST', data);
+  };
 
+  var _onSuccessMessageEscPress = function (evt) {
+    window.utils.isEscapeEvent(evt, _closeSuccessMessage);
   };
 
   /*
@@ -84,12 +103,34 @@
     _setHandlers();
   };
   // Выключает форму
-  var _disableForm = function () {
+  var disableForm = function () {
     FORM.classList.add(FORM_DISABLED_MOD);
     _disableFields();
     setAddress();
     _removeHandlers();
   };
+
+  var _closeSuccessMessage = function() {
+    document.querySelector('.' + SUCCESS_MESSAGE_CLASS).classList.add(SUCCESS_MESSAGE_CLASS + '_hidden');
+
+    document.removeEventListener('click', _closeSuccessMessage);
+    document.removeEventListener('keydown', _onSuccessMessageEscPress);
+  };
+
+  var _showSuccessMessage = function () {
+    var successMessage = document.querySelector('.' + SUCCESS_MESSAGE_CLASS);
+    if (successMessage) {
+      successMessage.classList.remove(SUCCESS_MESSAGE_CLASS + '_hidden');
+    } else {
+      document.querySelector('main').prepend(SUCCESS_MESSAGE_HTML);
+      successMessage = document.querySelector('.' + SUCCESS_MESSAGE_CLASS);
+    }
+
+    successMessage.addEventListener('click', _closeSuccessMessage);
+    successMessage.addEventListener('keydown', _onSuccessMessageEscPress);
+
+  };
+
   // Добавляет хэндлеры
   var _setHandlers = function () {
     FORM.querySelector('.js-flat-type').addEventListener('change', _onFlatTypeChange);
@@ -112,7 +153,7 @@
   * Инициализация модуля
   * */
   var init = function () {
-    _disableForm();
+    disableForm();
     setAddress();
   };
 
@@ -123,6 +164,7 @@
   * */
   window.form = {
     enable: enableForm,
+    disable: disableForm,
     setAddress: setAddress
   };
 })();

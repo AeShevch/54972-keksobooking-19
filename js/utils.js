@@ -22,6 +22,63 @@
     }
   };
 
+  var _onDragNDropElemMouseDown = function (evt) {
+    evt.preventDefault();
+    var dragged = false;
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var removeHandlers = function () {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      dragged = true;
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      elem.style.top = (elem.offsetTop - shift.y) + 'px';
+      elem.style.left = (elem.offsetLeft - shift.x) + 'px';
+
+      var onContainerMouseleave = function () {
+        removeHandlers();
+      };
+
+      if (container) {
+        container.addEventListener('mouseleave', onContainerMouseleave);
+      }
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      removeHandlers();
+
+      if (dragged) {
+        var onClickPreventDefault = function (clickEvt) {
+          clickEvt.preventDefault();
+          elem.removeEventListener('click', onClickPreventDefault);
+        };
+        elem.addEventListener('click', onClickPreventDefault);
+      }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
   /*
   * Функции
   * */
@@ -50,61 +107,12 @@
   // Запускает перетаскивание элемента, указанного в параметре elem при клике на элемент
   var dragNdropInit = function (elem, container) {
     elem.addEventListener('mousedown', function (evt) {
-      evt.preventDefault();
-      var dragged = false;
-
-      var startCoords = {
-        x: evt.clientX,
-        y: evt.clientY
-      };
-
-      var removeHandlers = function () {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      };
-
-      var onMouseMove = function (moveEvt) {
-        moveEvt.preventDefault();
-        dragged = true;
-
-        var shift = {
-          x: startCoords.x - moveEvt.clientX,
-          y: startCoords.y - moveEvt.clientY
-        };
-
-        startCoords = {
-          x: moveEvt.clientX,
-          y: moveEvt.clientY
-        };
-
-        elem.style.top = (elem.offsetTop - shift.y) + 'px';
-        elem.style.left = (elem.offsetLeft - shift.x) + 'px';
-
-        var onContainerMouseleave = function () {
-          removeHandlers();
-        };
-
-        if (container) {
-          container.addEventListener('mouseleave', onContainerMouseleave);
-        }
-      };
-
-      var onMouseUp = function (upEvt) {
-        upEvt.preventDefault();
-        removeHandlers();
-
-        if (dragged) {
-          var onClickPreventDefault = function (clickEvt) {
-            clickEvt.preventDefault();
-            elem.removeEventListener('click', onClickPreventDefault);
-          };
-          elem.addEventListener('click', onClickPreventDefault);
-        }
-      };
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      _onDragNDropElemMouseDown(evt, container);
     });
+  };
+
+  var dragNdropRemove = function () {
+    document.removeEventListener('mousedown', _onDragNDropElemMouseDown);
   };
 
   /*
@@ -119,6 +127,9 @@
     getRandomNumberOfItems: getRandomNumberOfItems,
     getGetRandomNumber: getGetRandomNumber,
     getRandomObjectKey: getRandomObjectKey,
-    dragNdropInit: dragNdropInit
+    dragNdrop: {
+      init: dragNdropInit,
+      remove: dragNdropRemove
+    }
   };
 })();

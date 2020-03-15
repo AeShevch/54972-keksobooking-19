@@ -1201,6 +1201,11 @@ fieldset {
   font-weight: 700;
 }
 
+.success_hidden,
+.error_hidden {
+    display: none;
+}
+
 .success__message::before,
 .error__message::before {
   content: "";

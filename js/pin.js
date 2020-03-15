@@ -77,6 +77,16 @@
     });
   };
 
+  var clearMap = function () {
+    var pins = MAP.querySelectorAll(PIN_SELECTOR);
+    console.log(pins);
+    if (pins) {
+      pins.forEach(function (pin) {
+        pin.remove();
+      });
+    }
+  };
+
   /*
   * Инициализация модуля
   * */
@@ -90,6 +100,7 @@
   * */
   window.pin = {
     init: init,
+    clearMap: clearMap,
     data: pinsData,
     positionY: {
       MAX: MAX_POSITION_Y,
