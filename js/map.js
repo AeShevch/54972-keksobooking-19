@@ -4,12 +4,10 @@
   * Константы
   * */
   var MAP = document.querySelector('.js-map-container');
+  var PIN_SELECTOR = '.js-map-pin-template';
   var WIDTH = MAP.offsetWidth;
   var MAIN_PIN = MAP.querySelector('.js-main-pin');
-  // Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
-  var MAIN_PIN_POINTER_HEIGHT = 22;
-  var MAIN_PIN_WIDTH = MAIN_PIN.offsetWidth;
-  var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
+
 
   // Флаг активности карты. По умолчанию карта выключена
   var mapIsActive = false;
@@ -34,12 +32,13 @@
   /*
   * Функции
   * */
-  // Возвращает координаты главной метки. Если страница неактивно, то возврщает координаты центра страницы
-  var getPinCoordinates = function () {
-    return {
-      x: Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2),
-      y: Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (mapIsActive ? MAIN_PIN_HEIGHT : MAIN_PIN_HEIGHT / 2)),
-    };
+  var _clearMap = function () {
+    var pins = MAP.querySelectorAll(PIN_SELECTOR);
+    if (pins) {
+      pins.forEach(function (pin) {
+        pin.remove();
+      });
+    }
   };
 
   // Запускает активный режим
@@ -65,7 +64,7 @@
     // Добавляем overlay
     MAP.classList.add('map--faded');
     // Удаляем все пины
-    window.pin.clearMap();
+    _clearMap();
     // Выключаем форму
     window.form.disable();
     // Добавляем хэндлеры на главную метку
@@ -90,6 +89,6 @@
   window.map = {
     WIDTH: WIDTH,
     setNonActiveMode: setNonActiveMode,
-    getPinCoordinates: getPinCoordinates
+    isActive: mapIsActive
   };
 })();

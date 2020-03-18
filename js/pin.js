@@ -77,21 +77,11 @@
     });
   };
 
-  var clearMap = function () {
-    var pins = MAP.querySelectorAll(PIN_SELECTOR);
-    console.log(pins);
-    if (pins) {
-      pins.forEach(function (pin) {
-        pin.remove();
-      });
-    }
-  };
-
   /*
   * Инициализация модуля
   * */
   var init = function () {
-    window.ajax(URL, addPinsOnMap, onAjaxError, 'GET');
+    window.ajax(URL, addPinsOnMap, onAjaxError);
     // addPinsOnMap(window.data.ads);
   };
 
@@ -100,7 +90,6 @@
   * */
   window.pin = {
     init: init,
-    clearMap: clearMap,
     data: pinsData,
     positionY: {
       MAX: MAX_POSITION_Y,

@@ -11,24 +11,40 @@
   * Хэндлеры
   * */
   // Нажатие Esc при открытой карточке
-  var onCardEscPress = function (evt) {
-    window.utils.isEscapeEvent(evt, closeCard);
+  var _onCardEscPress = function (evt) {
+    window.utils.isEscapeEvent(evt, _closeCard);
   };
   // Нажатие Enter на кнопке закрытия карточки
-  var onCardCloseEnterPress = function (evt) {
-    window.utils.isEnterEvent(evt, closeCard);
+  var _onCardCloseEnterPress = function (evt) {
+    window.utils.isEnterEvent(evt, _closeCard);
   };
 
   /*
   * Функции
   * */
   // Закрывает карточку
-  var closeCard = function () {
+  var _closeCard = function (evt) {
     document.querySelector(PIN_CARDS_SELECTOR).classList.add(CARD_MOD_HIDDEN);
-    document.removeEventListener('keyup', onCardEscPress);
+
+    // Удаляем хэндлеры
+    // На escEvent у нас нет target, поэтому ищем его сами
+    var closeBtn = evt ? evt.target : document.querySelector('.js-hide-card');
+    _removeCardHandlers(closeBtn);
+  };
+  // Добавлят хэндлеры на закрытие карточки
+  var _setCardHandlers = function (closeBtn) {
+    closeBtn.addEventListener('click', _closeCard);
+    closeBtn.addEventListener('keyup', _onCardCloseEnterPress);
+    document.addEventListener('keyup', _onCardEscPress);
+  };
+  // Удаляет хэндлеры на закрытие карточки
+  var _removeCardHandlers = function (closeBtn) {
+    closeBtn.removeEventListener('click', _closeCard);
+    closeBtn.removeEventListener('keyup', _onCardCloseEnterPress);
+    document.removeEventListener('keyup', _onCardEscPress);
   };
   // Показывает карточку объявления
-  var insertCard = function (cardFragment) {
+  var _insertCard = function (cardFragment) {
     MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
   };
   // Создаёт новую карточку и вставляет её на страницу
@@ -45,39 +61,53 @@
       card = CARD_TEMPLATE.cloneNode(true);
     }
 
-    // Id пользователя начинаются с 1, а элементы массива с 0
     var currentAd = window.pin.data[pin.dataset.id];
 
-    // Вставлем в него данные из элемента массива с объявлениями
+    // Вставлем в карточку данные
+    // Заголовок
     card.querySelector('.js-card-title').textContent = currentAd.offer.title;
+    // Адрес
     card.querySelector('.js-card-address').textContent = currentAd.offer.address;
+    // Цена
     card.querySelector('.js-card-price').textContent = currentAd.offer.price.toString();
+    // Кол-во комнат
     card.querySelector('.js-card-rooms-count').textContent = currentAd.offer.rooms.toString();
+    // Кол-во гостей
     card.querySelector('.js-card-guests-count').textContent = currentAd.offer.guests.toString();
+    // Время въезда
     card.querySelector('.js-card-checkin').textContent = currentAd.offer.checkin;
+    // Время выезда
     card.querySelector('.js-card-checkout').textContent = currentAd.offer.checkout;
+    // Описание
     card.querySelector('.js-card-desc').textContent = currentAd.offer.description;
+    // Изображение аватара
+    card.querySelector('.js-card-avatar').src = currentAd.author.avatar;
+    // Тип квартиры
+    card.querySelector('.js-card-type').textContent = window.data.cardTypesMap[currentAd.offer.type];
 
-    // Добавляем фотографии объявления
-    if (currentAd.offer.photos) {
-      // Используем имеющуюся в шаблоне вёрстку изображения как шаблон изображений, чтобы не писать вёрстку в JS
-      var cardImagesBlock = card.querySelector('.js-card-photo');
+    // Добавляем картинки объявления
+    var cardImagesBlock = card.querySelector('.js-card-photo');
+    // Модификатор, скрывающий блок с картинками
+    var hiddenModificator = 'popup__photos_hidden';
+    // Если изображения есть
+    if (currentAd.offer.photos.length) {
+      // Используем имеющуюся в шаблоне вёрстку изображения как шаблон,
+      // чтобы не пришлось вручную создавать тег, добавлять классы, высоту, ширину, alt
       var imagesFragment = document.createDocumentFragment();
+      // Добавляем фотографии объявления
       currentAd.offer.photos.forEach(function (photo) {
         var imageHtml = cardImagesBlock.querySelector('img').cloneNode();
         imageHtml.src = photo;
         imagesFragment.appendChild(imageHtml);
       });
-      // Очищаем блок и вставлем в него изображения
+      // Очищаем блок и вставлем в него изображения из подготовленного фрагмента и показываем
       cardImagesBlock.innerHTML = '';
       cardImagesBlock.appendChild(imagesFragment);
+      cardImagesBlock.classList.remove(hiddenModificator);
+    } else {
+      // Если изображений нет, то прячем блок
+      cardImagesBlock.classList.add(hiddenModificator);
     }
-
-    // Подставляем ссылку на изображение аватара
-    card.querySelector('.js-card-avatar').src = currentAd.author.avatar;
-
-    // Подставляем значения типа квартиры
-    card.querySelector('.js-card-type').textContent = window.data.cardTypesMap[currentAd.offer.type];
 
     // Показываем все элементы features, которые у нас есть в массиве
     var featuresBlock = card.querySelector('.js-card-features');
@@ -85,23 +115,25 @@
       featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
     });
 
-    // Если карточки нет, то вставляем её на страницу
+    // Кнопка закрытия карточки
+    var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
+
+    // Если карточки нет, то вставляем её на страницу и вешаем хэндлеры
     if (!cardIsExists) {
       // заполняем фрагмент
       cardFragment.appendChild(card);
       // Выводим фрагмент на страницу
-      insertCard(cardFragment);
+      _insertCard(cardFragment);
+
+      // Вешаем хэндлеры
+      _setCardHandlers(CLOSE_CARD_BTN);
     }
-
-    var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
-
-    CLOSE_CARD_BTN.addEventListener('click', closeCard);
-    CLOSE_CARD_BTN.addEventListener('keyup', onCardCloseEnterPress);
-    document.addEventListener('keyup', onCardEscPress);
 
     // Показываем карточку, если она скрыта
     if (cardIsExists && card.classList.contains(CARD_MOD_HIDDEN)) {
       card.classList.remove(CARD_MOD_HIDDEN);
+      // Вешаем хэндлеры обратно, так как удалили их при закрытии
+      _setCardHandlers(CLOSE_CARD_BTN);
     }
   };
 

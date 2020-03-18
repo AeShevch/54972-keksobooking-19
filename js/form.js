@@ -13,8 +13,20 @@
   var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
   var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
   var ROOMS_COUNT_FIELD = FORM.querySelector('.js-rooms-count-field');
-  var SUCCESS_MESSAGE_CLASS = 'success';
-  var SUCCESS_MESSAGE_HTML = document.getElementById(SUCCESS_MESSAGE_CLASS).cloneNode(true).content;
+  var SUCCESS_MESSAGE_BLOCK = 'success';
+  var ERROR_MESSAGE_BLOCK = 'error';
+
+  var FLAT_TYPE_SELECT = FORM.querySelector('.js-flat-type');
+  var TIME_SELECTS = FORM.querySelectorAll(TIME_FIELD_SELECTOR);
+  var ROOMS_COUNT_SELECT = FORM.querySelector('.js-rooms-count-field');
+
+
+  var MAP = document.querySelector('.js-map-container');
+  var MAIN_PIN = MAP.querySelector('.js-main-pin');
+  // Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
+  var MAIN_PIN_POINTER_HEIGHT = 22;
+  var MAIN_PIN_WIDTH = MAIN_PIN.offsetWidth;
+  var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
 
   /*
   * Хэндлеры
@@ -36,34 +48,43 @@
   var _capacityFieldOnChange = function () {
     _checkSelectValidity(CAPACITY_FIELD);
   };
-
+  // Ошибка аякса
   var _onAjaxError = function (error) {
+    _showAfterAjaxMessage(ERROR_MESSAGE_BLOCK);
     throw new Error(error);
   };
-
+  // Успешный ответ от сервера
   var _onAjaxSuccess = function () {
     window.map.setNonActiveMode();
     FORM.reset();
     disableForm();
-    _showSuccessMessage();
+    _showAfterAjaxMessage(SUCCESS_MESSAGE_BLOCK);
   };
-
+  // Отправка формы
   var _onFormSubmit = function (evt) {
     evt.preventDefault();
     var data = new FormData(document.querySelector('.ad-form'));
-    window.ajax(URL, _onAjaxSuccess, _onAjaxError,'POST', data);
+    window.ajax(URL, _onAjaxSuccess, _onAjaxError, 'POST', data);
   };
-
-  var _onSuccessMessageEscPress = function (evt) {
-    window.utils.isEscapeEvent(evt, _closeSuccessMessage);
+  // Нажатие ESC на сообщении после отправки Ajax
+  var _onAfterAjaxMessageEscPress = function (evt) {
+    window.utils.isEscapeEvent(evt, _closeAfterAjaxMessage);
   };
 
   /*
   * Функции
   * */
+  // Возвращает координаты главной метки. Если страница неактивно, то возврщает координаты центра страницы
+  var _getPinCoordinates = function () {
+    var mapIsActive = !MAP.classList.contains('map--faded');
+    return {
+      x: Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2),
+      y: Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (mapIsActive ? MAIN_PIN_HEIGHT : MAIN_PIN_HEIGHT / 2)),
+    };
+  };
   // Задаёт адрес
   var setAddress = function () {
-    ADDRESS_FIELD.value = window.map.getPinCoordinates().x + ', ' + window.map.getPinCoordinates().y;
+    ADDRESS_FIELD.value = _getPinCoordinates().x + ', ' + _getPinCoordinates().y;
   };
   // Изменяет минимальную стоимость
   var _changeAdMinPrice = function (input, minPrice) {
@@ -109,44 +130,62 @@
     setAddress();
     _removeHandlers();
   };
+  // Закрывает сообщение после отправки формы
+  var _closeAfterAjaxMessage = function () {
+    var errorMessage = document.querySelector('.' + ERROR_MESSAGE_BLOCK);
+    var successMessage = document.querySelector('.' + SUCCESS_MESSAGE_BLOCK);
+    var messageBlock;
+    var messageHiddenModificator;
 
-  var _closeSuccessMessage = function() {
-    document.querySelector('.' + SUCCESS_MESSAGE_CLASS).classList.add(SUCCESS_MESSAGE_CLASS + '_hidden');
-
-    document.removeEventListener('click', _closeSuccessMessage);
-    document.removeEventListener('keydown', _onSuccessMessageEscPress);
-  };
-
-  var _showSuccessMessage = function () {
-    var successMessage = document.querySelector('.' + SUCCESS_MESSAGE_CLASS);
-    if (successMessage) {
-      successMessage.classList.remove(SUCCESS_MESSAGE_CLASS + '_hidden');
+    if (errorMessage && !errorMessage.classList.contains(ERROR_MESSAGE_BLOCK + '_hidden')) {
+      messageBlock = errorMessage;
+      messageHiddenModificator = ERROR_MESSAGE_BLOCK + '_hidden';
+    } else if (successMessage && !successMessage.classList.contains(ERROR_MESSAGE_BLOCK + '_hidden')) {
+      messageBlock = successMessage;
+      messageHiddenModificator = SUCCESS_MESSAGE_BLOCK + '_hidden';
     } else {
-      document.querySelector('main').prepend(SUCCESS_MESSAGE_HTML);
-      successMessage = document.querySelector('.' + SUCCESS_MESSAGE_CLASS);
+      throw new Error('Не найдено окон для закрытия');
     }
 
-    successMessage.addEventListener('click', _closeSuccessMessage);
-    successMessage.addEventListener('keydown', _onSuccessMessageEscPress);
+    messageBlock.classList.add(messageHiddenModificator);
 
+    messageBlock.removeEventListener('click', _closeAfterAjaxMessage);
+    document.removeEventListener('keydown', _onAfterAjaxMessageEscPress);
   };
+  // Показывает сообщение после отправки формы
+  var _showAfterAjaxMessage = function (messageBlockName) {
+    var messageBlock = document.querySelector('.' + messageBlockName);
+    var messageHtml = document.getElementById(messageBlockName).cloneNode(true).content;
 
+    if (messageBlock) {
+      messageBlock.classList.remove(messageBlockName + '_hidden');
+    } else {
+      document.querySelector('main').prepend(messageHtml);
+      messageBlock = document.querySelector('.' + messageBlockName);
+    }
+
+    messageBlock.addEventListener('click', _closeAfterAjaxMessage);
+    document.addEventListener('keydown', _onAfterAjaxMessageEscPress);
+  };
   // Добавляет хэндлеры
   var _setHandlers = function () {
-    FORM.querySelector('.js-flat-type').addEventListener('change', _onFlatTypeChange);
-    FORM.querySelectorAll(TIME_FIELD_SELECTOR).forEach(function (timeField) {
+    FLAT_TYPE_SELECT.addEventListener('change', _onFlatTypeChange);
+    TIME_SELECTS.forEach(function (timeField) {
       timeField.addEventListener('change', _onTimeChange);
     });
-    FORM.querySelector('.js-rooms-count-field').addEventListener('change', _onRoomsCountChange);
+    ROOMS_COUNT_SELECT.addEventListener('change', _onRoomsCountChange);
     CAPACITY_FIELD.addEventListener('change', _capacityFieldOnChange);
     FORM.addEventListener('submit', _onFormSubmit);
   };
   // Удаляет хэндлеры
   var _removeHandlers = function () {
-    document.removeEventListener('change', _onFlatTypeChange);
-    document.removeEventListener('change', _onTimeChange);
-    document.removeEventListener('change', _onRoomsCountChange);
-    document.removeEventListener('change', _capacityFieldOnChange);
+    FLAT_TYPE_SELECT.removeEventListener('change', _onFlatTypeChange);
+    TIME_SELECTS.forEach(function (timeField) {
+      timeField.removeEventListener('change', _onTimeChange);
+    });
+    ROOMS_COUNT_SELECT.removeEventListener('change', _onRoomsCountChange);
+    CAPACITY_FIELD.removeEventListener('change', _capacityFieldOnChange);
+    FORM.removeEventListener('submit', _onFormSubmit);
   };
 
   /*

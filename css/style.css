@@ -1156,6 +1156,10 @@ fieldset {
       flex-wrap: wrap;
 }
 
+.popup__photos_hidden {
+  display: none;
+}
+
 .popup__photo {
   margin-right: 5px;
   margin-bottom: 5px;
