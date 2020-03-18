@@ -22,8 +22,9 @@
     }
   };
 
-  var _onDragNDropElemMouseDown = function (evt) {
+  var _onDragNDropElemMouseDown = function (evt, container) {
     evt.preventDefault();
+    var elem = evt.target;
     var dragged = false;
 
     var startCoords = {

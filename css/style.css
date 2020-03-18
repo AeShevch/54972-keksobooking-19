@@ -233,6 +233,7 @@ fieldset {
 .map__pin--main img {
   position: relative;
   z-index: 1;
+  pointer-events: none;
 
   padding: 2px 6px 6px;
 
