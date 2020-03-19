@@ -32,7 +32,7 @@
   /*
   * Функции
   * */
-  var _clearMap = function () {
+  var clearMap = function () {
     var pins = MAP.querySelectorAll(PIN_SELECTOR);
     if (pins) {
       pins.forEach(function (pin) {
@@ -64,7 +64,7 @@
     // Добавляем overlay
     MAP.classList.add('map--faded');
     // Удаляем все пины
-    _clearMap();
+    clearMap();
     // Выключаем форму
     window.form.disable();
     // Добавляем хэндлеры на главную метку
@@ -88,6 +88,7 @@
   * */
   window.map = {
     WIDTH: WIDTH,
+    clear: clearMap,
     setNonActiveMode: setNonActiveMode,
     isActive: mapIsActive
   };

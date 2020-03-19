@@ -34,6 +34,16 @@
     throw new Error(error);
   };
 
+  var _onAjaxSuccess = function (request) {
+    var ads = request;
+
+    var adsFiltered = ads.filter(function (ad, index) {
+      return ad;
+    });
+
+    addPinsOnMap(adsFiltered.slice(0, 5));
+  };
+
   /*
   * Функции
   * */
@@ -77,11 +87,16 @@
     });
   };
 
+  var reloadPins = function (ads) {
+    window.map.clear();
+    addPinsOnMap(ads);
+  };
+
   /*
   * Инициализация модуля
   * */
   var init = function () {
-    window.ajax(URL, addPinsOnMap, onAjaxError);
+    window.ajax(URL, _onAjaxSuccess, onAjaxError);
     // addPinsOnMap(window.data.ads);
   };
 
@@ -91,6 +106,7 @@
   window.pin = {
     init: init,
     data: pinsData,
+    reload: reloadPins,
     positionY: {
       MAX: MAX_POSITION_Y,
       MIN: MIN_POSITION_Y
