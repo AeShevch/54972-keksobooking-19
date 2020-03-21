@@ -1,6 +1,7 @@
 'use strict';
 (function () {
   var FILTER = document.querySelector('.js-map-filter');
+  var MAX_PINS_COUNT = 5;
   var selectNameToDataKey = {
     'housing-type': 'type'
   };
@@ -29,6 +30,7 @@
 
   window.filter = {
     init: init,
-    removeHandlers: removeHandlers
+    removeHandlers: removeHandlers,
+    maxCount: MAX_PINS_COUNT
   };
 })();

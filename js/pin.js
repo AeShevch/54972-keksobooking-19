@@ -19,8 +19,6 @@
   // Фрагмент для меток
   var fragment = document.createDocumentFragment();
 
-  var pinsData = {};
-
   /*
   * Хэндлеры
   * */
@@ -35,14 +33,8 @@
   };
 
   var _onAjaxSuccess = function (request) {
-    var ads = request;
-    window.pin.data = ads;
-
-    var adsFiltered = ads.filter(function (ad, index) {
-      return ad;
-    });
-
-    addPinsOnMap(adsFiltered.slice(0, 5));
+    addPinsOnMap(request.slice(0, window.filter.maxCount));
+    window.pin.data = request;
   };
 
   /*
