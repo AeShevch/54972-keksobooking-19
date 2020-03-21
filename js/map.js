@@ -49,6 +49,8 @@
     MAP.classList.remove('map--faded');
     // Добавляем пины на карту
     window.pin.init(MAP);
+    // Инициализируем фильтры
+    window.filter.init();
     // Отключаем хэндлеры на главной метке
     document.removeEventListener('mouseup', onMainPinMouseUp);
     document.removeEventListener('keyup', onMainPinEnterPress);
@@ -72,6 +74,10 @@
     MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
     // Выключает перетаскивание главной метки
     window.utils.dragNdrop.remove();
+    // Удаляем хэндлеры фильтра
+    if (window.filter) {
+      window.filter.removeHandlers();
+    }
   };
 
   /*

@@ -36,6 +36,7 @@
 
   var _onAjaxSuccess = function (request) {
     var ads = request;
+    window.pin.data = ads;
 
     var adsFiltered = ads.filter(function (ad, index) {
       return ad;
@@ -65,7 +66,6 @@
   };
   // Добавляем метки на карту
   var addPinsOnMap = function (ads) {
-    window.pin.data = ads;
     // Создаём по метке на каждое объявление
     ads.forEach(function (ad, index) {
       createPinHtml(ad, index);
@@ -105,7 +105,6 @@
   * */
   window.pin = {
     init: init,
-    data: pinsData,
     reload: reloadPins,
     positionY: {
       MAX: MAX_POSITION_Y,

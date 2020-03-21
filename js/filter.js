@@ -1,41 +1,34 @@
 'use strict';
 (function () {
   var FILTER = document.querySelector('.js-map-filter');
-  var HOUSING_TYPE_SELECT = FILTER.getElementById('housing-type');
-  var URL = 'https://js.dump.academy/keksobooking/data';
-
-  var _onAjaxError = function (error) {
-    throw new Error(error);
-  };
-
-  var _onAjaxSuccess = function (request) {
-
+  var selectNameToDataKey = {
+    'housing-type': 'type'
   };
 
   var _onFilterChange = function (evt) {
-    if (evt.target === HOUSING_TYPE_SELECT) {
-      var value = evt.target.value;
-      window.ajax(URL, _onAjaxSuccess, _onAjaxError);
-    }
+    _filter(window.pin.data, selectNameToDataKey[evt.target.name], evt.target.value);
   };
 
   var _setHandlers = function () {
     FILTER.addEventListener('change', _onFilterChange);
   };
 
-  var _removeHandlers = function () {
+  var removeHandlers = function () {
     FILTER.removeEventListener('change', _onFilterChange);
   };
-  var _filter = function (data) {
-    console.log();
-    console.log('click');
-    window.pin.reload(data);
+
+  var _filter = function (data, key, value) {
+    window.pin.reload(data.filter(function (item) {
+      return item['offer'][key] === value;
+    }));
   };
 
   var init = function () {
-    _setHandlers();
+    _setHandlers(FILTER);
   };
 
-  init();
-
+  window.filter = {
+    init: init,
+    removeHandlers: removeHandlers
+  };
 })();
