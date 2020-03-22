@@ -12,9 +12,6 @@
   // Размер метки
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
-  // Максимальное и минимальное расположение метки по вертикали
-  var MAX_POSITION_Y = 630;
-  var MIN_POSITION_Y = 130;
 
   // Фрагмент для меток
   var fragment = document.createDocumentFragment();
@@ -22,16 +19,17 @@
   /*
   * Хэндлеры
   * */
+  // Нажатия Enter при фокусе на пине
   var onPinEnterPress = function (evt) {
     window.utils.isEnterEvent(evt, function () {
       window.card.show(evt.currentTarget);
     });
   };
-
+  // Событие при ошибке получения данных
   var onAjaxError = function (error) {
     throw new Error(error);
   };
-
+  // Событие при успешном получении данных
   var _onAjaxSuccess = function (request) {
     var ads = request;
     // Добавляем Id к каждому объявлению
@@ -83,7 +81,7 @@
       });
     });
   };
-
+  // Очишает карту и добавляет новые пины
   var reloadPins = function (ads) {
     window.map.clear();
     addPinsOnMap(ads);
@@ -94,7 +92,6 @@
   * */
   var init = function () {
     window.ajax(URL, _onAjaxSuccess, onAjaxError);
-    // addPinsOnMap(window.data.ads);
   };
 
   /*
@@ -102,11 +99,7 @@
   * */
   window.pin = {
     init: init,
-    reload: reloadPins,
-    positionY: {
-      MAX: MAX_POSITION_Y,
-      MIN: MIN_POSITION_Y
-    }
+    reload: reloadPins
   };
 
 })();

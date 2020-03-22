@@ -5,7 +5,6 @@
   * */
   var MAP = document.querySelector('.js-map-container');
   var PIN_SELECTOR = '.js-map-pin-template';
-  var WIDTH = MAP.offsetWidth;
   var MAIN_PIN = MAP.querySelector('.js-main-pin');
   var CARD_SELECTOR = '.js-pin-card';
   var CARD_HIDDEN_MODIFICATOR= 'map__card_hidden';
@@ -18,15 +17,15 @@
   * Хэндлеры
   * */
   // Нажатие клавиши Enter на главной метке
-  var onMainPinEnterPress = function (evt) {
+  var _onMainPinEnterPress = function (evt) {
     if (!mapIsActive) {
-      window.utils.isEnterEvent(evt, setActiveMode);
+      window.utils.isEnterEvent(evt, _setActiveMode);
     }
   };
   // Клик по главной метке
-  var onMainPinMouseUp = function (evt) {
+  var _onMainPinMouseUp = function (evt) {
     if (evt.button === 0 && !mapIsActive) {
-      setActiveMode();
+      _setActiveMode();
     }
     window.form.setAddress();
   };
@@ -48,7 +47,7 @@
   };
 
   // Запускает активный режим
-  var setActiveMode = function () {
+  var _setActiveMode = function () {
     // Флаг активности
     mapIsActive = true;
     // Убираем overlay
@@ -58,8 +57,8 @@
     // Инициализируем фильтры
     window.filter.init();
     // Отключаем хэндлеры на главной метке
-    document.removeEventListener('mouseup', onMainPinMouseUp);
-    document.removeEventListener('keyup', onMainPinEnterPress);
+    MAIN_PIN.removeEventListener('mouseup', _onMainPinMouseUp);
+    MAIN_PIN.removeEventListener('keyup', _onMainPinEnterPress);
     // Включаем форму
     window.form.enable();
     // Включает перетаскивание главной метки
@@ -76,8 +75,8 @@
     // Выключаем форму
     window.form.disable();
     // Добавляем хэндлеры на главную метку
-    MAIN_PIN.addEventListener('mouseup', onMainPinMouseUp);
-    MAIN_PIN.addEventListener('keyup', onMainPinEnterPress);
+    MAIN_PIN.addEventListener('mouseup', _onMainPinMouseUp);
+    MAIN_PIN.addEventListener('keyup', _onMainPinEnterPress);
     // Выключает перетаскивание главной метки
     window.utils.dragNdrop.remove();
     // Удаляем хэндлеры фильтра
@@ -99,9 +98,7 @@
   * Интерфейс
   * */
   window.map = {
-    WIDTH: WIDTH,
     clear: clearMap,
-    setNonActiveMode: setNonActiveMode,
-    isActive: mapIsActive
+    setNonActiveMode: setNonActiveMode
   };
 })();
