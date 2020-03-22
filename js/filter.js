@@ -38,7 +38,7 @@
   * Хэндлеры
   * */
   var _onFilterChange = window.debounce(function () {
-      window.pin.reload(_filter().slice(0, MAX_PINS_COUNT))
+    window.pin.reload(_filter().slice(0, MAX_PINS_COUNT));
   });
 
   /*
@@ -84,7 +84,7 @@
           // Если это особенность (feature), то смотрим находится ли она в массиве особенностей объявления
           // Если нет, то объявление не проходит
           if (filterFieldKey === 'features' && ad['offer'][offerKey].indexOf(fieldValue) === -1) {
-            addIsAppropriate = false
+            addIsAppropriate = false;
           } else
           // Если это не особенность, то смотрим соответствует ли это поле значению в объявлении
           // Если нет, то объявление не проходит
