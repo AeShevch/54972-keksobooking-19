@@ -33,6 +33,11 @@
   };
 
   var _onAjaxSuccess = function (request) {
+    var ads = request;
+    // Добавляем Id к каждому объявлению
+    ads.forEach(function (ad, index) {
+      ads[index]['id'] = index;
+    });
     addPinsOnMap(request.slice(0, window.filter.maxCount));
     window.pin.data = request;
   };
@@ -41,9 +46,9 @@
   * Функции
   * */
   // Создаёт вёрстку меток во фрагменте
-  var createPinHtml = function (ad, index) {
+  var createPinHtml = function (ad) {
     var pinHtml = TEMPLATE.cloneNode(true);
-    pinHtml.dataset.id = index;
+    pinHtml.dataset.id = ad.id;
 
     // Выставляем положение элемента на карте
     pinHtml.style.top = ad.location.y + PIN_HEIGHT + 'px';
@@ -59,8 +64,8 @@
   // Добавляем метки на карту
   var addPinsOnMap = function (ads) {
     // Создаём по метке на каждое объявление
-    ads.forEach(function (ad, index) {
-      createPinHtml(ad, index);
+    ads.forEach(function (ad) {
+      createPinHtml(ad);
     });
 
     // Вставляем полученный фрагмент на карту

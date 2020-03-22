@@ -1,13 +1,32 @@
 'use strict';
 (function () {
   var FILTER = document.querySelector('.js-map-filter');
+  var FORM = FILTER.querySelector('form');
   var MAX_PINS_COUNT = 5;
   var selectNameToDataKey = {
-    'housing-type': 'type'
+    'housing-type': 'type',
+    'housing-price': 'price',
+    'housing-rooms': 'rooms',
+    'housing-guests': 'guests',
+    'features': 'features',
+  };
+
+  var pricesTypeToValue = {
+    'low': {
+      'min': 0,
+      'max': 10000
+    },
+    'middle': {
+      'min': 10000,
+      'max': 50000
+    },
+    'high': {
+      'min': 50000
+    }
   };
 
   var _onFilterChange = function (evt) {
-    _filter(window.pin.data, selectNameToDataKey[evt.target.name], evt.target.value);
+    _filter(window.pin.data);
   };
 
   var _setHandlers = function () {
@@ -18,9 +37,28 @@
     FILTER.removeEventListener('change', _onFilterChange);
   };
 
-  var _filter = function (data, key, value) {
+  var _filter = function (data) {
+    var filterData = new FormData(FORM);
     window.pin.reload(data.filter(function (item) {
-      return item['offer'][key] === value;
+      for (var field of filterData.entries()) {
+
+        var offerKey = selectNameToDataKey[field[0]];
+
+        if (field[0] === 'housing-price') {
+          var priceRage = pricesTypeToValue[field[1]];
+          var currentPrice = item['offer'][offerKey];
+
+          return (priceRage['max'] ? currentPrice < priceRage['max'] : true) && currentPrice >= priceRage['min'];
+        }
+
+        if (field[0] === 'features' && item['offer'][offerKey].indexOf(field[1]) === -1) {
+          return false
+        } else if (field[0] !== 'features' && field[1] !== 'any' && item['offer'][offerKey].toString() !== field[1]) {
+          return false;
+        }
+
+      }
+      return true;
     }));
   };
 

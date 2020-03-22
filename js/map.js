@@ -7,6 +7,8 @@
   var PIN_SELECTOR = '.js-map-pin-template';
   var WIDTH = MAP.offsetWidth;
   var MAIN_PIN = MAP.querySelector('.js-main-pin');
+  var CARD_SELECTOR = '.js-pin-card';
+  var CARD_HIDDEN_MODIFICATOR= 'map__card_hidden';
 
 
   // Флаг активности карты. По умолчанию карта выключена
@@ -38,6 +40,10 @@
       pins.forEach(function (pin) {
         pin.remove();
       });
+    }
+    var card = document.querySelector(CARD_SELECTOR);
+    if (card) {
+      card.classList.add(CARD_HIDDEN_MODIFICATOR);
     }
   };
 
