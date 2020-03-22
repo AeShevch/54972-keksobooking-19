@@ -56,39 +56,45 @@
   var _filter = function () {
     // Собираем данные формы фильтров
     var filterData = new FormData(FORM);
-
+    var filterDataKeys = Array.from(filterData.keys());
     // Берём данные меток из модуля pin.js и фльтруем их в соответствии с выбранными фильтрами
-    return window.pin.data.filter(function (item) {
+    return window.pin.data.filter(function (ad) {
+      // Флаг подходящего под фильтр объявления
+      // По-умолчанию true
+      var addIsAppropriate = true;
       // Для каждого объявления проверяем все фильтры
-      for (var field of filterData.entries()) {
-        // Если значение поля «any», то пропускаем его
-        if (field[1] === 'any') {
-          continue;
-        }
-        // Получаем ключ, соответствующий атрибуту «name» поля
-        var offerKey = selectNameToDataKey[field[0]];
+      filterDataKeys.forEach(function (filterFieldKey) {
+        // Значение поле
+        var fieldValue = filterData.get(filterFieldKey);
+        // Если значение не любое
+        if (fieldValue !== 'any') {
+          // Получаем ключ, соответствующий атрибуту «name» поля
+          var offerKey = selectNameToDataKey[filterFieldKey];
 
-        // Если это цена, то проверяем находится ли она в нужном диапазоне
-        if (field[0] === 'housing-price') {
-          var priceRage = pricesTypeToValue[field[1]];
-          var currentPrice = item['offer'][offerKey];
-
-          return (priceRage['max'] ? currentPrice < priceRage['max'] : true) && currentPrice >= priceRage['min'];
-        }
-
-        // Если это особенность (feature), то смотрим находится ли она в массиве особенностей объявления
-        // Если нет, то пропускаем объявление
-        if (field[0] === 'features' && item['offer'][offerKey].indexOf(field[1]) === -1) {
-          return false
-        } else
+          // Если это цена, то проверяем находится ли она в нужном диапазоне
+          // Если нет, то объявление не проходит
+          if (filterFieldKey === 'housing-price') {
+            var priceRage = pricesTypeToValue[fieldValue];
+            var currentPrice = ad['offer'][offerKey];
+            var priceIsOutOfRange = !((priceRage['max'] ? currentPrice < priceRage['max'] : true) && currentPrice >= priceRage['min']);
+            if (priceIsOutOfRange) {
+              addIsAppropriate = false;
+            }
+          } else
+          // Если это особенность (feature), то смотрим находится ли она в массиве особенностей объявления
+          // Если нет, то объявление не проходит
+          if (filterFieldKey === 'features' && ad['offer'][offerKey].indexOf(fieldValue) === -1) {
+            addIsAppropriate = false
+          } else
           // Если это не особенность, то смотрим соответствует ли это поле значению в объявлении
-          // Если нет, то пропускаем объявление
-          if (field[0] !== 'features' && item['offer'][offerKey].toString() !== field[1]) {
-          return false;
+          // Если нет, то объявление не проходит
+          if (filterFieldKey !== 'features' && ad['offer'][offerKey].toString() !== fieldValue) {
+            addIsAppropriate = false;
+          }
         }
-      }
-      // Если мы дошли до сюда, значит все проверки пройдены - добавляем элемент в итоговый массив
-      return true;
+      });
+
+      return addIsAppropriate;
     });
   };
 

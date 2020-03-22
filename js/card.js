@@ -6,6 +6,7 @@
   var MAP = document.querySelector('.js-map-container');
   var PIN_CARDS_SELECTOR = '.js-pin-card';
   var CARD_MOD_HIDDEN = 'map__card_hidden';
+  var FEATURE_MOD_HIDDEN = 'popup__feature--hidden';
 
   /*
   * Хэндлеры
@@ -111,8 +112,14 @@
 
     // Показываем все элементы features, которые у нас есть в массиве
     var featuresBlock = card.querySelector('.js-card-features');
+    // Сначала скрываем всё
+    var featuresNodes = featuresBlock.querySelectorAll('.popup__feature');
+    featuresNodes.forEach(function (featureNode) {
+      featureNode.classList.add(FEATURE_MOD_HIDDEN);
+    });
+    // Потом показывает только то, что есть в массиве features
     currentAd.offer.features.forEach(function (feature) {
-      featuresBlock.querySelector('.popup__feature--' + feature).classList.remove('popup__feature--hidden');
+      featuresBlock.querySelector('.popup__feature--' + feature).classList.remove(FEATURE_MOD_HIDDEN);
     });
 
     // Кнопка закрытия карточки
