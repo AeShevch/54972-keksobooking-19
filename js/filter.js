@@ -25,8 +25,8 @@
     }
   };
 
-  var _onFilterChange = function (evt) {
-    _filter(window.pin.data);
+  var _onFilterChange = function () {
+    window.pin.reload(_filter().slice(0, MAX_PINS_COUNT));
   };
 
   var _setHandlers = function () {
@@ -37,10 +37,15 @@
     FILTER.removeEventListener('change', _onFilterChange);
   };
 
-  var _filter = function (data) {
+  var _filter = function () {
     var filterData = new FormData(FORM);
-    window.pin.reload(data.filter(function (item) {
+
+    return window.pin.data.filter(function (item) {
       for (var field of filterData.entries()) {
+
+        if (field[1] === 'any') {
+          continue;
+        }
 
         var offerKey = selectNameToDataKey[field[0]];
 
@@ -53,13 +58,13 @@
 
         if (field[0] === 'features' && item['offer'][offerKey].indexOf(field[1]) === -1) {
           return false
-        } else if (field[0] !== 'features' && field[1] !== 'any' && item['offer'][offerKey].toString() !== field[1]) {
+        } else if (field[0] !== 'features' && item['offer'][offerKey].toString() !== field[1]) {
           return false;
         }
 
       }
       return true;
-    }));
+    });
   };
 
   var init = function () {
