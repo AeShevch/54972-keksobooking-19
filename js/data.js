@@ -1,24 +1,38 @@
 'use strict';
 (function () {
   /*
+  * Константы
+  * */
+  // Минимальные стоимости
+  var PALACE_MIN_PRICE = 10000;
+  var FLAT_MIN_PRICE = 1000;
+  var HOUSE_MIN_PRICE = 5000;
+  var BUNGALO_MIN_PRICE = 0;
+
+  var prohibitedGuestCountFor1Room = [2, 3, 0];
+  var prohibitedGuestCountFor2Rooms = [3, 0];
+  var prohibitedGuestCountFor3Rooms = [0];
+  var prohibitedGuestCountFor100Rooms = [1, 2, 3];
+
+  /*
   * Словари
   * */
   // Словарь минимальных стоимостей
-  var adsPricesMap = {
-    'palace': 10000,
-    'flat': 1000,
-    'house': 5000,
-    'bungalo': 0,
+  var AdsPricesMap = {
+    'palace': PALACE_MIN_PRICE,
+    'flat': FLAT_MIN_PRICE,
+    'house': HOUSE_MIN_PRICE,
+    'bungalo': BUNGALO_MIN_PRICE,
   };
   // Словарь запрещённых значений количества гостей для определённых количеств комнат
-  var roomsToProhibitedGuestsCount = {
-    '1': [2, 3, 0],
-    '2': [3, 0],
-    '3': [0],
-    '100': [1, 2, 3]
+  var RoomsToProhibitedGuestsCount = {
+    '1': prohibitedGuestCountFor1Room,
+    '2': prohibitedGuestCountFor2Rooms,
+    '3': prohibitedGuestCountFor3Rooms,
+    '100': prohibitedGuestCountFor100Rooms
   };
   // Словарь соответствий типов квартир
-  var cardTypesMap = {
+  var CardTypesMap = {
     'bungalo': 'Бунгало',
     'house': 'Дом',
     'palace': 'Дворец',
@@ -29,8 +43,8 @@
   * Интерфейс
   * */
   window.data = {
-    cardTypesMap: cardTypesMap,
-    adsPricesMap: adsPricesMap,
-    roomsToProhibitedGuestsCount: roomsToProhibitedGuestsCount
+    cardTypesMap: CardTypesMap,
+    adsPricesMap: AdsPricesMap,
+    roomsToProhibitedGuestsCount: RoomsToProhibitedGuestsCount
   };
 })();

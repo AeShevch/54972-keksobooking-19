@@ -3,37 +3,42 @@
   /*
   * Константы
   * */
-  var FORM = document.querySelector('.ad-form');
   var URL = 'https://js.dump.academy/keksobooking';
   var FORM_DISABLED_MOD = 'ad-form--disabled';
-  var FIELDS_TO_DISABLE = document.querySelectorAll('.js-disable-on-load');
   var TIME_FIELD_SELECTOR = '.js-time-field';
-  var PRICE_FIELD = document.querySelector('.js-ad-price');
-  var ADDRESS_FIELD = document.getElementById('address');
-  var CAPACITY_FIELD = document.querySelector('.js-capacity-field');
-  var CAPACITY_OPTIONS = [].slice.call(CAPACITY_FIELD.options);
-  var ROOMS_COUNT_FIELD = FORM.querySelector('.js-rooms-count-field');
   var SUCCESS_MESSAGE_BLOCK = 'success';
   var ERROR_MESSAGE_BLOCK = 'error';
-
-  var FLAT_TYPE_SELECT = FORM.querySelector('.js-flat-type');
-  var TIME_SELECTS = FORM.querySelectorAll(TIME_FIELD_SELECTOR);
-  var ROOMS_COUNT_SELECT = FORM.querySelector('.js-rooms-count-field');
-
-
-  var MAP = document.querySelector('.js-map-container');
-  var MAIN_PIN = MAP.querySelector('.js-main-pin');
-  // Так как указатель метки псевдоэлементом, мы не можем измерить его высоту
+  // Высота псевдоэлемента на укзателе, нужна, чтобы измерить его высоту
   var MAIN_PIN_POINTER_HEIGHT = 22;
-  var MAIN_PIN_WIDTH = MAIN_PIN.offsetWidth;
-  var MAIN_PIN_HEIGHT = MAIN_PIN.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
+
+  /*
+  * Используемые DOM-узлы
+  * */
+  var formNode = document.querySelector('.ad-form');
+  var fieldsToDisableOnLoad = document.querySelectorAll('.js-disable-on-load');
+  var priceFieldNode = document.querySelector('.js-ad-price');
+  var addressFieldNode = document.getElementById('address');
+  var capacityFieldNode = document.querySelector('.js-capacity-field');
+  var capacityOptions = [].slice.call(capacityFieldNode.options);
+  var roomsCountFieldNode = formNode.querySelector('.js-rooms-count-field');
+  var flatTypeSelectNode = formNode.querySelector('.js-flat-type');
+  var timeSelectsNodes = formNode.querySelectorAll(TIME_FIELD_SELECTOR);
+  var roomsCountSelectNode = formNode.querySelector('.js-rooms-count-field');
+  var mapNode = document.querySelector('.js-map-container');
+  var mainPinNode = mapNode.querySelector('.js-main-pin');
+
+  /*
+  * Переменные
+  * */
+  var mainPinWidth = mainPinNode.offsetWidth;
+  var mainPinHeight = mainPinNode.offsetHeight + MAIN_PIN_POINTER_HEIGHT;
 
   /*
   * Хэндлеры
   * */
   // Изменение типа жилья
   var _onFlatTypeChange = function (evt) {
-    _changeAdMinPrice(PRICE_FIELD, window.data.adsPricesMap[evt.target.selectedOptions[0].value]);
+    _changeAdMinPrice(priceFieldNode, window.data.adsPricesMap[evt.target.selectedOptions[0].value]);
   };
   // Изменение времени заезда и выезда
   var _onTimeChange = function (evt) {
@@ -46,7 +51,7 @@
   };
   // Изменение количества гостей
   var _capacityFieldOnChange = function () {
-    _checkSelectValidity(CAPACITY_FIELD);
+    _checkSelectValidity(capacityFieldNode);
   };
   // Ошибка аякса
   var _onAjaxError = function (error) {
@@ -56,7 +61,7 @@
   // Успешный ответ от сервера
   var _onAjaxSuccess = function () {
     window.map.setNonActiveMode();
-    FORM.reset();
+    formNode.reset();
     disableForm();
     _showAfterAjaxMessage(SUCCESS_MESSAGE_BLOCK);
   };
@@ -76,15 +81,15 @@
   * */
   // Возвращает координаты главной метки. Если страница неактивна, то возврщает координаты центра страницы
   var _getPinCoordinates = function () {
-    var mapIsActive = !MAP.classList.contains('map--faded');
+    var mapIsActive = !mapNode.classList.contains('map--faded');
     return {
-      x: Math.floor(MAIN_PIN.offsetLeft - MAP.offsetLeft + MAIN_PIN_WIDTH / 2),
-      y: Math.floor(MAIN_PIN.offsetTop - MAP.offsetTop - (mapIsActive ? MAIN_PIN_HEIGHT : MAIN_PIN_HEIGHT / 2)),
+      x: Math.floor(mainPinNode.offsetLeft - mapNode.offsetLeft + mainPinWidth / 2),
+      y: Math.floor(mainPinNode.offsetTop - mapNode.offsetTop - (mapIsActive ? mainPinHeight : mainPinHeight / 2)),
     };
   };
   // Задаёт адрес
   var setAddress = function () {
-    ADDRESS_FIELD.value = _getPinCoordinates().x + ', ' + _getPinCoordinates().y;
+    addressFieldNode.value = _getPinCoordinates().x + ', ' + _getPinCoordinates().y;
   };
   // Изменяет минимальную стоимость
   var _changeAdMinPrice = function (input, minPrice) {
@@ -99,33 +104,33 @@
   };
   // Отключает неподходящие для типа жилья опции количества гостей
   var _setAvailableCapacity = function (rooms) {
-    CAPACITY_OPTIONS.forEach(function (option) {
+    capacityOptions.forEach(function (option) {
       option.disabled = window.data.roomsToProhibitedGuestsCount[rooms].indexOf(parseInt(option.value, 10)) !== -1;
     });
-    _checkSelectValidity(CAPACITY_FIELD);
+    _checkSelectValidity(capacityFieldNode);
   };
   // Отключает поля формы
   var _disableFields = function () {
-    FIELDS_TO_DISABLE.forEach(function (fieldset) {
+    fieldsToDisableOnLoad.forEach(function (fieldset) {
       fieldset.setAttribute('disabled', 'disabled');
     });
   };
   // Включает поля формы
   var _enableFields = function () {
-    FIELDS_TO_DISABLE.forEach(function (fieldset) {
+    fieldsToDisableOnLoad.forEach(function (fieldset) {
       fieldset.removeAttribute('disabled');
     });
   };
   // Активирует форму
   var enableForm = function () {
-    FORM.classList.remove(FORM_DISABLED_MOD);
-    _setAvailableCapacity(ROOMS_COUNT_FIELD.value);
+    formNode.classList.remove(FORM_DISABLED_MOD);
+    _setAvailableCapacity(roomsCountFieldNode.value);
     _enableFields();
     _setHandlers();
   };
   // Выключает форму
   var disableForm = function () {
-    FORM.classList.add(FORM_DISABLED_MOD);
+    formNode.classList.add(FORM_DISABLED_MOD);
     _disableFields();
     setAddress();
     _removeHandlers();
@@ -169,23 +174,23 @@
   };
   // Добавляет хэндлеры
   var _setHandlers = function () {
-    FLAT_TYPE_SELECT.addEventListener('change', _onFlatTypeChange);
-    TIME_SELECTS.forEach(function (timeField) {
+    flatTypeSelectNode.addEventListener('change', _onFlatTypeChange);
+    timeSelectsNodes.forEach(function (timeField) {
       timeField.addEventListener('change', _onTimeChange);
     });
-    ROOMS_COUNT_SELECT.addEventListener('change', _onRoomsCountChange);
-    CAPACITY_FIELD.addEventListener('change', _capacityFieldOnChange);
-    FORM.addEventListener('submit', _onFormSubmit);
+    roomsCountSelectNode.addEventListener('change', _onRoomsCountChange);
+    capacityFieldNode.addEventListener('change', _capacityFieldOnChange);
+    formNode.addEventListener('submit', _onFormSubmit);
   };
   // Удаляет хэндлеры
   var _removeHandlers = function () {
-    FLAT_TYPE_SELECT.removeEventListener('change', _onFlatTypeChange);
-    TIME_SELECTS.forEach(function (timeField) {
+    flatTypeSelectNode.removeEventListener('change', _onFlatTypeChange);
+    timeSelectsNodes.forEach(function (timeField) {
       timeField.removeEventListener('change', _onTimeChange);
     });
-    ROOMS_COUNT_SELECT.removeEventListener('change', _onRoomsCountChange);
-    CAPACITY_FIELD.removeEventListener('change', _capacityFieldOnChange);
-    FORM.removeEventListener('submit', _onFormSubmit);
+    roomsCountSelectNode.removeEventListener('change', _onRoomsCountChange);
+    capacityFieldNode.removeEventListener('change', _capacityFieldOnChange);
+    formNode.removeEventListener('submit', _onFormSubmit);
   };
 
   /*

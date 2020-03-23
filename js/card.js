@@ -3,10 +3,15 @@
   /*
   * Константы
   * */
-  var MAP = document.querySelector('.js-map-container');
   var PIN_CARDS_SELECTOR = '.js-pin-card';
   var CARD_MOD_HIDDEN = 'map__card_hidden';
   var FEATURE_MOD_HIDDEN = 'popup__feature--hidden';
+
+  /*
+  * Используемые DOM-узлы
+  * */
+  var mapNode = document.querySelector('.js-map-container');
+
 
   /*
   * Хэндлеры
@@ -46,7 +51,7 @@
   };
   // Показывает карточку объявления
   var _insertCard = function (cardFragment) {
-    MAP.insertBefore(cardFragment, MAP.querySelector('.js-map-filter'));
+    mapNode.insertBefore(cardFragment, mapNode.querySelector('.js-map-filter'));
   };
   // Создаёт новую карточку и вставляет её на страницу
   var showAdInfoCard = function (pin) {
@@ -123,7 +128,7 @@
     });
 
     // Кнопка закрытия карточки
-    var CLOSE_CARD_BTN = card.querySelector('.js-hide-card');
+    var closeCardBtnNode = card.querySelector('.js-hide-card');
 
     // Если карточки нет, то вставляем её на страницу и вешаем хэндлеры
     if (!cardIsExists) {
@@ -133,14 +138,14 @@
       _insertCard(cardFragment);
 
       // Вешаем хэндлеры
-      _setCardHandlers(CLOSE_CARD_BTN);
+      _setCardHandlers(closeCardBtnNode);
     }
 
     // Показываем карточку, если она скрыта
     if (cardIsExists && card.classList.contains(CARD_MOD_HIDDEN)) {
       card.classList.remove(CARD_MOD_HIDDEN);
       // Вешаем хэндлеры обратно, так как удалили их при закрытии
-      _setCardHandlers(CLOSE_CARD_BTN);
+      _setCardHandlers(closeCardBtnNode);
     }
   };
 

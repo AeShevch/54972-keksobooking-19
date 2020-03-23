@@ -3,12 +3,17 @@
   /*
   * Константы
   * */
-  var MAP = document.querySelector('.js-map-container');
   var PIN_SELECTOR = '.js-map-pin-template';
-  var MAIN_PIN = MAP.querySelector('.js-main-pin');
   var CARD_SELECTOR = '.js-pin-card';
   var CARD_HIDDEN_MODIFICATOR = 'map__card_hidden';
+  var MAIN_PIN_ORIG_LEFT = 570;
+  var MAIN_PIN_ORIG_TOP = 375;
 
+  /*
+  * Используемые DOM-узлы
+  * */
+  var mapNode = document.querySelector('.js-map-container');
+  var mainPinNode = mapNode.querySelector('.js-main-pin');
 
   // Флаг активности карты. По умолчанию карта выключена
   var mapIsActive = false;
@@ -34,7 +39,7 @@
   * Функции
   * */
   var clearMap = function () {
-    var pins = MAP.querySelectorAll(PIN_SELECTOR);
+    var pins = mapNode.querySelectorAll(PIN_SELECTOR);
     if (pins) {
       pins.forEach(function (pin) {
         pin.remove();
@@ -46,43 +51,50 @@
     }
   };
 
+  var _returnMainPin = function () {
+    mainPinNode.style.top = MAIN_PIN_ORIG_TOP + 'px';
+    mainPinNode.style.left = MAIN_PIN_ORIG_LEFT + 'px';
+  };
+
   // Запускает активный режим
   var _setActiveMode = function () {
     // Флаг активности
     mapIsActive = true;
     // Убираем overlay
-    MAP.classList.remove('map--faded');
+    mapNode.classList.remove('map--faded');
     // Добавляем пины на карту
-    window.pin.init(MAP);
+    window.pin.init(mapNode);
     // Инициализируем фильтры
     window.filter.init();
     // Отключаем хэндлеры на главной метке
-    MAIN_PIN.removeEventListener('mouseup', _onMainPinMouseUp);
-    MAIN_PIN.removeEventListener('keyup', _onMainPinEnterPress);
+    mainPinNode.removeEventListener('mouseup', _onMainPinMouseUp);
+    mainPinNode.removeEventListener('keyup', _onMainPinEnterPress);
     // Включаем форму
     window.form.enable();
     // Включает перетаскивание главной метки
-    window.utils.dragNdrop.init(MAIN_PIN, MAP);
+    window.utils.dragNdrop.init(mainPinNode, mapNode);
   };
 
   var setNonActiveMode = function () {
     // Флаг активности
     mapIsActive = false;
     // Добавляем overlay
-    MAP.classList.add('map--faded');
+    mapNode.classList.add('map--faded');
     // Удаляем все пины
     clearMap();
     // Выключаем форму
     window.form.disable();
     // Добавляем хэндлеры на главную метку
-    MAIN_PIN.addEventListener('mouseup', _onMainPinMouseUp);
-    MAIN_PIN.addEventListener('keyup', _onMainPinEnterPress);
+    mainPinNode.addEventListener('mouseup', _onMainPinMouseUp);
+    mainPinNode.addEventListener('keyup', _onMainPinEnterPress);
     // Выключает перетаскивание главной метки
-    window.utils.dragNdrop.remove();
+    window.utils.dragNdrop.remove(mainPinNode);
     // Удаляем хэндлеры фильтра
     if (window.filter) {
-      window.filter.removeHandlers();
+      window.filter.reset();
     }
+    // Возвращаем главную метку на место
+    _returnMainPin();
   };
 
   /*

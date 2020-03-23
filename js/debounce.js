@@ -1,6 +1,13 @@
 'use strict';
 (function () {
+  /*
+  * Константы
+  * */
   var DEBOUNCE_INTERVAL = 500; // ms
+
+  /*
+  * Интерфейс
+  * */
   window.debounce = function (cb) {
     var lastTimeout = null;
 

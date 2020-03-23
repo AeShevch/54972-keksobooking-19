@@ -21,10 +21,21 @@
       action();
     }
   };
+
+  var isOutOfContainer = function (elem, shift, container) {
+    var elemLeft = elem.offsetLeft - shift.x;
+    var elemTop = elem.offsetTop - shift.y;
+    return elemTop <= 0 ||
+           elemLeft <= 0 ||
+           elemTop + elem.offsetHeight >= container.offsetHeight ||
+           elemLeft + elem.offsetWidth >= container.offsetWidth;
+  };
+
   // Перемещение метки
-  var _onDragNDropElemMouseDown = function (evt, container) {
+  var _onDragNDropElemMouseDown = function (evt) {
     evt.preventDefault();
     var elem = evt.target;
+    var container = elem.parentNode.parentNode;
     var dragged = false;
 
     var startCoords = {
@@ -54,13 +65,11 @@
       elem.style.top = (elem.offsetTop - shift.y) + 'px';
       elem.style.left = (elem.offsetLeft - shift.x) + 'px';
 
-      var onContainerMouseleave = function () {
+      if (dragged && isOutOfContainer(elem, shift, container)) {
+        dragged = false;
         _removeHandlers();
-      };
-
-      if (container) {
-        container.addEventListener('mouseleave', onContainerMouseleave);
       }
+
     };
 
     var _onMouseUp = function (upEvt) {
@@ -84,14 +93,12 @@
   * Функции
   * */
   // Запускает перетаскивание элемента, указанного в параметре elem при клике на элемент
-  var dragNdropInit = function (elem, container) {
-    elem.addEventListener('mousedown', function (evt) {
-      _onDragNDropElemMouseDown(evt, container);
-    });
+  var dragNdropInit = function (elem) {
+    elem.addEventListener('mousedown', _onDragNDropElemMouseDown);
   };
 
-  var dragNdropRemove = function () {
-    document.removeEventListener('mousedown', _onDragNDropElemMouseDown);
+  var dragNdropRemove = function (elem) {
+    elem.removeEventListener('mousedown', _onDragNDropElemMouseDown);
   };
 
   /*

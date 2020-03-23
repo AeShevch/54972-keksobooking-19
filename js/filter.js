@@ -3,16 +3,20 @@
   /*
   * Константы
   * */
-  var FILTER = document.querySelector('.js-map-filter');
-  var FORM = FILTER.querySelector('form');
   // Максимальное количество меток на карте
   var MAX_PINS_COUNT = 5;
+
+  /*
+  * Используемые DOM-узлы
+  * */
+  var filterNode = document.querySelector('.js-map-filter');
+  var formNode = filterNode.querySelector('form');
 
   /*
   * Словари соответствий
   * */
   // Словарь соответствия атрибута names у полей формы ключам в массиве объектов
-  var selectNameToDataKey = {
+  var SelectNameToDataKey = {
     'housing-type': 'type',
     'housing-price': 'price',
     'housing-rooms': 'rooms',
@@ -20,25 +24,25 @@
     'features': 'features',
   };
   // Словарь соответствия типа цены к её значению
-  var pricesTypeToValue = {
+  var PricesTypeToValue = {
     'low': {
       'min': 0,
-      'max': 10000
+      'max': 10000,
     },
     'middle': {
       'min': 10000,
-      'max': 50000
+      'max': 50000,
     },
     'high': {
-      'min': 50000
-    }
+      'min': 50000,
+    },
   };
 
   /*
   * Хэндлеры
   * */
   var _onFilterChange = window.debounce(function () {
-    window.pin.reload(_filter().slice(0, MAX_PINS_COUNT));
+    window.pin.reload(_getFilteredData().slice(0, MAX_PINS_COUNT));
   });
 
   /*
@@ -46,19 +50,27 @@
   * */
   // Добавляет хэндлер на изменений фильтров
   var _setHandlers = function () {
-    FILTER.addEventListener('change', _onFilterChange);
+    filterNode.addEventListener('change', _onFilterChange);
   };
-  // Удаляет хэндлер на изменений фильтров
-  var removeHandlers = function () {
-    FILTER.removeEventListener('change', _onFilterChange);
+  // Удаляет хэндлер на изменения фильтров
+  var _removeHandlers = function () {
+    filterNode.removeEventListener('change', _onFilterChange);
+  };
+
+  var resetFilters = function () {
+    _removeHandlers();
+    // Возвращаем селекты к изначальному значению
+    formNode.querySelectorAll('select').forEach(function (select) {
+      select.value = 'any';
+    });
+    //
+    formNode.querySelectorAll('[name=features]').forEach(function (checkbox) {
+      checkbox.checked = false;
+    });
   };
   // Функция фильтрации
-  var _filter = function () {
-    // Собираем данные формы фильтров
-    var filterData = new FormData(FORM);
-    var filterDataKeys = Array.from(filterData.keys());
-    // Берём данные меток из модуля pin.js и фльтруем их в соответствии с выбранными фильтрами
-    return window.pin.data.filter(function (ad) {
+  var _filter = function (data, filterData, filterDataKeys) {
+    return data.filter(function (ad) {
       // Флаг подходящего под фильтр объявления
       // По-умолчанию true
       var addIsAppropriate = true;
@@ -69,12 +81,12 @@
         // Если значение не любое
         if (fieldValue !== 'any') {
           // Получаем ключ, соответствующий атрибуту «name» поля
-          var offerKey = selectNameToDataKey[filterFieldKey];
+          var offerKey = SelectNameToDataKey[filterFieldKey];
 
           // Если это цена, то проверяем находится ли она в нужном диапазоне
           // Если нет, то объявление не проходит
           if (filterFieldKey === 'housing-price') {
-            var priceRage = pricesTypeToValue[fieldValue];
+            var priceRage = PricesTypeToValue[fieldValue];
             var currentPrice = ad['offer'][offerKey];
             var priceIsOutOfRange = !((priceRage['max'] ? currentPrice < priceRage['max'] : true) && currentPrice >= priceRage['min']);
             if (priceIsOutOfRange) {
@@ -97,10 +109,19 @@
       return addIsAppropriate;
     });
   };
+  // Возвращает отфильтрованные данные
+  var _getFilteredData = function () {
+    // Собираем данные формы фильтров
+    var filterData = new FormData(formNode);
+    var filterDataKeys = Array.from(filterData.keys());
+    // Берём данные меток из модуля pin.js и фльтруем их в соответствии с выбранными фильтрами
+
+    return _filter(window.pin.data, filterData, filterDataKeys);
+  };
 
   // Инициализация модуля
   var init = function () {
-    _setHandlers(FILTER);
+    _setHandlers(filterNode);
   };
 
   /*
@@ -108,7 +129,7 @@
   * */
   window.filter = {
     init: init,
-    removeHandlers: removeHandlers,
-    maxCount: MAX_PINS_COUNT
+    reset: resetFilters,
+    maxCount: MAX_PINS_COUNT,
   };
 })();

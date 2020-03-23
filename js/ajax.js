@@ -8,8 +8,8 @@
   * type – необязательный параметр. Тип запроса GET/POST. Если параметр не указан, то отправляется GET-запрос;
   * data – необязательный параметр. Передаваемый объект
   * */
+  var TIMEOUT = 10000;
   window.ajax = function (url, onSuccess, onError, type, data) {
-    var TIMEOUT = 10000;
     var xhr = new XMLHttpRequest();
 
     xhr.responseType = 'json';
